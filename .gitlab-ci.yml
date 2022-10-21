@@ -29,16 +29,16 @@ compile:
   stage: build
   script:
     - gomobile init  
-    - mkdir -p libraries
-    - gomobile bind -o androiid/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+    - mkdir -p android
+    - gomobile bind -o android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
   before_script:
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
     - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
     - unzip -d android-sdk-linux android-sdk.zip
-    - echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null
-    - echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" >/dev/null
-    #- echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
+    - android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+    - android-sdk-linux/tools/bin/sdkmanager "platform-tools"
+    - android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
     - export ANDROID_HOME=$PWD/android-sdk-linux
     - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
     - chmod +x ./gradlew
