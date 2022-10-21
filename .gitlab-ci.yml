@@ -1,17 +1,8 @@
-# This file is a template, and might need editing before it works on your project.
-# You can copy and paste this template into a new `.gitlab-ci.yml` file.
-# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
-#
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Go.gitlab-ci.yml
 image: $CI_REGISTRY_IMAGE
 
 stages:
   - test
   - build
-  - deploy
 
 format:
   stage: test
@@ -37,23 +28,6 @@ BuildAndroidLibrary:
     paths:
       - android
 
-".go":
-  stage: build
-  before_script:
-    - apk -U upgrade
-    - apk --no-cache add curl
-    - apk add go   
-    - export PATH=$PATH:~/go/bin
-    
-".android":
-  stage: build
-  before_script:
-    - apk add go
-    - export PATH=$PATH:~/go/bin
-    - go install golang.org/x/mobile/cmd/gomobile@latest
-    - extras ndk   
-
-
 BuildiOSFramework:
   stage: build
   tags: [macos11]
@@ -69,5 +43,20 @@ BuildiOSFramework:
     
   artifacts:
     paths:
-      - ./iOS    
+      - ./iOS
 
+  ".go":
+    stage: build
+    before_script:
+      - apk -U upgrade
+      - apk --no-cache add curl
+      - apk add go
+      - export PATH=$PATH:~/go/bin
+
+  ".android":
+    stage: build
+    before_script:
+      - apk add go
+      - export PATH=$PATH:~/go/bin
+      - go install golang.org/x/mobile/cmd/gomobile@latest
+      - extras ndk
