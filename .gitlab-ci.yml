@@ -45,7 +45,7 @@ BuildiOSFramework:
     paths:
       - ./iOS
 
-  ".go":
+".go":
     stage: build
     before_script:
       - apk -U upgrade
@@ -53,7 +53,7 @@ BuildiOSFramework:
       - apk add go
       - export PATH=$PATH:~/go/bin
 
-  ".android":
+".android":
     stage: build
     before_script:
       - apk add go
