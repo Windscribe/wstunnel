@@ -31,7 +31,7 @@ compile:
   script:
     - gomobile init  
     - mkdir -p android
-    - gomobile bind -o android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+    - gomobile android bind -o android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
   before_script:
     - apk -U upgrade
     - apk --no-cache add curl
