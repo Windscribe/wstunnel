@@ -38,6 +38,7 @@ compile:
     - apk add go
     - go install golang.org/x/mobile/cmd/gomobile@latest
     - export PATH=$PATH:~/go/bin
+    - extras ndk
 
   artifacts:
     paths:
