@@ -48,6 +48,7 @@ BuildAndroidLibrary:
 ".android":
   stage: build
   before_script:
+    - export PATH=$PATH:~/go/bin
     - go install golang.org/x/mobile/cmd/gomobile@latest
     - extras ndk   
 
