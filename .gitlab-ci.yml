@@ -22,36 +22,36 @@ format:
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -race $(go list ./... | grep -v /vendor/)
    
-BuildAndroidLibrary:
-  stage: build
-  extends:
-    - ".go"
-    - ".android"
-  script:
-    - gomobile init  
-    - mkdir -p android
-    - cd mobile
-    - gomobile bind -o ../android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+# BuildAndroidLibrary:
+#   stage: build
+#   extends:
+#     - ".go"
+#     - ".android"
+#   script:
+#     - gomobile init  
+#     - mkdir -p android
+#     - cd mobile
+#     - gomobile bind -o ../android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
     
-  artifacts:
-    paths:
-      - android
+#   artifacts:
+#     paths:
+#       - android
 
-".go":
-  stage: build
-  before_script:
-    - apk -U upgrade
-    - apk --no-cache add curl
-    - apk add go   
-    - export PATH=$PATH:~/go/bin
+# ".go":
+#   stage: build
+#   before_script:
+#     - apk -U upgrade
+#     - apk --no-cache add curl
+#     - apk add go   
+#     - export PATH=$PATH:~/go/bin
     
-".android":
-  stage: build
-  before_script:
-    - apk add go
-    - export PATH=$PATH:~/go/bin
-    - go install golang.org/x/mobile/cmd/gomobile@latest
-    - extras ndk   
+# ".android":
+#   stage: build
+#   before_script:
+#     - apk add go
+#     - export PATH=$PATH:~/go/bin
+#     - go install golang.org/x/mobile/cmd/gomobile@latest
+#     - extras ndk   
 
 
 BuildiOSFramework:
@@ -60,11 +60,11 @@ BuildiOSFramework:
   before_script:
     - go install golang.org/x/mobile/cmd/gomobile@latest  
     - export PATH=$PATH:~/go/bin
-    - xcode-select --install
   script:
     - gomobile init  
     - mkdir -p iOS
     - cd mobile
+    - xcode-select --install
     - gomobile bind -target ios/arm64 -o ../iOS/wstunnel.xcframework
     - cd ../
     
