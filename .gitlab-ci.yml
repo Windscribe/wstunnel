@@ -64,6 +64,7 @@ BuildiOSFramework:
     - gomobile init  
     - mkdir -p iOS
     - cd mobile
+    - xcode-select --reset
     - xcode-select --install
     - gomobile bind -target ios/arm64 -o ../iOS/wstunnel.xcframework
     - cd ../
