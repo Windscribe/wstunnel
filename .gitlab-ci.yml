@@ -13,43 +13,59 @@ stages:
   - build
   - deploy
 
-format:
-  stage: test
-  extends:
-    - ".go"
-  script:
-    - go fmt $(go list ./... | grep -v /vendor/)
-    - go vet $(go list ./... | grep -v /vendor/)
-    - go test -race $(go list ./... | grep -v /vendor/)
+# format:
+#   stage: test
+#   extends:
+#     - ".go"
+#   script:
+#     - go fmt $(go list ./... | grep -v /vendor/)
+#     - go vet $(go list ./... | grep -v /vendor/)
+#     - go test -race $(go list ./... | grep -v /vendor/)
    
-BuildAndroidLibrary:
+# BuildAndroidLibrary:
+#   stage: build
+#   extends:
+#     - ".go"
+#     - ".android"
+#   script:
+#     - gomobile init  
+#     - mkdir -p android
+#     - cd mobile
+#     - gomobile bind -o ../android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+    
+#   artifacts:
+#     paths:
+#       - android
+
+# ".go":
+#   stage: build
+#   before_script:
+#     - apk -U upgrade
+#     - apk --no-cache add curl
+#     - apk add go   
+#     - export PATH=$PATH:~/go/bin
+    
+# ".android":
+#   stage: build
+#   before_script:
+#     - apk add go
+#     - export PATH=$PATH:~/go/bin
+#     - go install golang.org/x/mobile/cmd/gomobile@latest
+#     - extras ndk   
+
+
+BuildiOSFramework:
   stage: build
-  extends:
-    - ".go"
-    - ".android"
+  tags: [macos11]
+  before_script:
+    - go install golang.org/x/mobile/cmd/gomobile@latest  
   script:
     - gomobile init  
-    - mkdir -p android
+    - mkdir -p iOS
     - cd mobile
-    - gomobile bind -o ../android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+    - gomobile bind -target ios -o ../iOS/wstunnel.xcframework
     
   artifacts:
     paths:
-      - android
-
-".go":
-  stage: build
-  before_script:
-    - apk -U upgrade
-    - apk --no-cache add curl
-    - apk add go   
-    - export PATH=$PATH:~/go/bin
-    
-".android":
-  stage: build
-  before_script:
-    - apk add go
-    - export PATH=$PATH:~/go/bin
-    - go install golang.org/x/mobile/cmd/gomobile@latest
-    - extras ndk   
+      - iOS    
 
