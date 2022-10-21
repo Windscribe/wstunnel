@@ -6,12 +6,7 @@
 # https://docs.gitlab.com/ee/development/cicd/templates.html
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Go.gitlab-ci.yml
-image: golang:latest
-
-variables:
-  ANDROID_COMPILE_SDK: "28"
-  ANDROID_BUILD_TOOLS: "28.0.2"
-  ANDROID_SDK_TOOLS:   "4333796"
+image: $CI_REGISTRY_IMAGE
 
 stages:
   - test
@@ -24,6 +19,11 @@ format:
     - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -race $(go list ./... | grep -v /vendor/)
+  before_script:
+    - apk -U upgrade
+    - apk --no-cache add curl
+    - apk add go
+    - go install golang.org/x/mobile/cmd/gomobile@latest
 
 compile:
   stage: build
@@ -31,23 +31,6 @@ compile:
     - gomobile init  
     - mkdir -p android
     - gomobile bind -o android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
-  before_script:
-    - apt-get --quiet update --yes
-    - apt-get install openjdk-11-jdk
-    - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
-    - unzip -d android-sdk-linux android-sdk.zip
-    - android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
-    - android-sdk-linux/tools/bin/sdkmanager "platform-tools"
-    - android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
-    - export ANDROID_HOME=$PWD/android-sdk-linux
-    - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
-    - chmod +x ./gradlew
-    # temporarily disable checking for EPIPE error and use yes to accept all licenses
-    - set +o pipefail
-    - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
-    - set -o pipefail
-    - go install golang.org/x/mobile/cmd/gomobile@latest
 
   artifacts:
     paths:
