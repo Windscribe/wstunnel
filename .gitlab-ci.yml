@@ -65,6 +65,7 @@ BuildiOSFramework:
     - mkdir -p iOS
     - cd mobile
     - gomobile bind -target ios/arm64 -o ../iOS/wstunnel.xcframework
+    - cd ../
     
   artifacts:
     paths:
