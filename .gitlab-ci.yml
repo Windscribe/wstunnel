@@ -68,5 +68,5 @@ BuildiOSFramework:
     
   artifacts:
     paths:
-      - iOS    
+      - ./iOS    
 
