@@ -56,7 +56,7 @@ stages:
 
 BuildiOSFramework:
   stage: build
-  tags: [macos11qt6]
+  tags: [macos11]
   before_script:
     - go install golang.org/x/mobile/cmd/gomobile@latest  
   script:
