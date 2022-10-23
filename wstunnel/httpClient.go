@@ -1,11 +1,12 @@
 package wstunnel
 
 import (
+	"Ws/utils"
 	"github.com/gorilla/websocket"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -34,7 +35,7 @@ func NewHTTPClient(listenTCP, connectWS string, callback func(fd int), channel c
 func (h *httpClient) Run() error {
 	tcpAdr, err := net.ResolveTCPAddr("tcp", h.listenTCP)
 	if err != nil {
-		log.Fatal("Error resolving tcp address: ", err)
+		utils.Logger.Errorf("Error resolving tcp address: %s", err)
 		return err
 	}
 	tcpConnection, err := net.ListenTCP("tcp", tcpAdr)
@@ -42,34 +43,41 @@ func (h *httpClient) Run() error {
 		return err
 	}
 	defer tcpConnection.Close()
-	var active = true
-	log.Printf("Listening on 127.0.0.1%s", h.listenTCP)
-	for active {
-		tcpConn, err := tcpConnection.Accept()
-		if err != nil {
-			log.Printf("Error: could not accept the connection: %s", err)
-			continue
-		}
-		log.Printf("New connection from: %s", tcpConn.RemoteAddr().String())
-
-		wsConn, err := h.createWsConnection(tcpConn.RemoteAddr().String())
-		if err != nil || wsConn == nil {
-			log.Printf("%s - Ws connection > Error while dialing %s: %s", tcpConn.RemoteAddr(), h.connectWS, err)
-			tcpConn.Close()
-			continue
-		}
-
-		b := NewBidirConnection(tcpConn, wsConn, time.Second*10)
-		go b.Run()
-
+	utils.Logger.Infof("Listening on 127.0.0.1:%s", h.listenTCP)
+	doneMutex := sync.Mutex{}
+	done := false
+	isDone := func() bool {
+		doneMutex.Lock()
+		defer doneMutex.Unlock()
+		return done
+	}
+	go func() {
 		select {
 		case msg := <-h.channel:
-			if msg == "exit" {
-				wsConn.Close()
-				tcpConn.Close()
-				active = false
+			if msg == "done" {
+				doneMutex.Lock()
+				defer doneMutex.Unlock()
+				done = true
+				_ = tcpConnection.Close()
 			}
 		}
+	}()
+	for !isDone() {
+		tcpConn, err := tcpConnection.Accept()
+		if err != nil {
+			utils.Logger.Error("Error: could not accept the connection: ", err)
+			continue
+		}
+		utils.Logger.Infof("New connection from %s", tcpConn.RemoteAddr().String())
+
+		wsConn, wsErr := h.createWsConnection(tcpConn.RemoteAddr().String())
+		if wsErr != nil || wsConn == nil {
+			utils.Logger.Errorf("%s - Ws connection > Error while dialing %s: %s", tcpConn.RemoteAddr(), h.connectWS, wsErr)
+			_ = tcpConn.Close()
+			continue
+		}
+		b := NewBidirConnection(tcpConn, wsConn, time.Second*10)
+		go b.Run()
 	}
 	return err
 }
@@ -98,7 +106,7 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 		if err != nil {
 			return
 		}
-		log.Printf("%s - Connecting to %s", remoteAddr, wsURL)
+		utils.Logger.Infof("%s - Connecting to %s", remoteAddr, wsURL)
 		var httpResponse *http.Response
 		dialer := *websocket.DefaultDialer
 		// Access underlying socket fd before connecting to it.
@@ -121,7 +129,7 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 			switch httpResponse.StatusCode {
 			case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect, http.StatusPermanentRedirect:
 				wsConnectUrl = httpResponse.Header.Get("Location")
-				log.Printf("%s - Redirect to %s", remoteAddr, wsConnectUrl)
+				utils.Logger.Infof("%s - Redirect to %s", remoteAddr, wsConnectUrl)
 				continue
 			}
 		}
