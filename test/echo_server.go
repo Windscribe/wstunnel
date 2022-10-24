@@ -1,7 +1,7 @@
 package test
 
 import (
-	"Ws/utils"
+	"Ws/wstunnel"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -53,7 +53,7 @@ func startServer(address string, path string) *EchoServer {
 func (server *EchoServer) echoMessageBack(clientId string, message []byte) {
 	err := server.clients[clientId].WriteMessage(websocket.BinaryMessage, message)
 	if err != nil {
-		utils.Logger.Error("Error writing message to client: %s", err)
+		wstunnel.Logger.Error("Error writing message to client: %s", err)
 		return
 	}
 }

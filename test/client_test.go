@@ -1,7 +1,6 @@
 package test
 
 import (
-	"Ws/utils"
 	"Ws/wstunnel"
 	"fmt"
 	"net"
@@ -18,7 +17,7 @@ var tcpServerAddress = "localhost:1194"
 var dataToSend = []byte("Send me this message back.")
 
 func TestEndToEndConnection(t *testing.T) {
-	utils.InitLogger(true, "")
+	wstunnel.InitLogger(true, "")
 	//Ws server
 	startServer(echoServerAddress, path)
 	//Tcp server
