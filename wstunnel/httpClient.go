@@ -1,7 +1,6 @@
 package wstunnel
 
 import (
-	"Ws/utils"
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
@@ -35,7 +34,7 @@ func NewHTTPClient(listenTCP, connectWS string, callback func(fd int), channel c
 func (h *httpClient) Run() error {
 	tcpAdr, err := net.ResolveTCPAddr("tcp", h.listenTCP)
 	if err != nil {
-		utils.Logger.Errorf("Error resolving tcp address: %s", err)
+		Logger.Errorf("Error resolving tcp address: %s", err)
 		return err
 	}
 	tcpConnection, err := net.ListenTCP("tcp", tcpAdr)
@@ -43,7 +42,7 @@ func (h *httpClient) Run() error {
 		return err
 	}
 	defer tcpConnection.Close()
-	utils.Logger.Infof("Listening on 127.0.0.1:%s", h.listenTCP)
+	Logger.Infof("Listening on 127.0.0.1:%s", h.listenTCP)
 	doneMutex := sync.Mutex{}
 	done := false
 	isDone := func() bool {
@@ -65,14 +64,14 @@ func (h *httpClient) Run() error {
 	for !isDone() {
 		tcpConn, err := tcpConnection.Accept()
 		if err != nil {
-			utils.Logger.Error("Error: could not accept the connection: ", err)
+			Logger.Error("Error: could not accept the connection: ", err)
 			continue
 		}
-		utils.Logger.Infof("New connection from %s", tcpConn.RemoteAddr().String())
+		Logger.Infof("New connection from %s", tcpConn.RemoteAddr().String())
 
 		wsConn, wsErr := h.createWsConnection(tcpConn.RemoteAddr().String())
 		if wsErr != nil || wsConn == nil {
-			utils.Logger.Errorf("%s - Ws connection > Error while dialing %s: %s", tcpConn.RemoteAddr(), h.connectWS, wsErr)
+			Logger.Errorf("%s - Ws connection > Error while dialing %s: %s", tcpConn.RemoteAddr(), h.connectWS, wsErr)
 			_ = tcpConn.Close()
 			continue
 		}
@@ -106,7 +105,7 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 		if err != nil {
 			return
 		}
-		utils.Logger.Infof("%s - Connecting to %s", remoteAddr, wsURL)
+		Logger.Infof("%s - Connecting to %s", remoteAddr, wsURL)
 		var httpResponse *http.Response
 		dialer := *websocket.DefaultDialer
 		// Access underlying socket fd before connecting to it.
@@ -129,7 +128,7 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 			switch httpResponse.StatusCode {
 			case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect, http.StatusPermanentRedirect:
 				wsConnectUrl = httpResponse.Header.Get("Location")
-				utils.Logger.Infof("%s - Redirect to %s", remoteAddr, wsConnectUrl)
+				Logger.Infof("%s - Redirect to %s", remoteAddr, wsConnectUrl)
 				continue
 			}
 		}
