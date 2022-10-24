@@ -1,10 +1,10 @@
 package test
 
 import (
-	"Ws/wstunnel"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"wstunnel/wstunnel"
 )
 
 // EchoServer simple web socket server for testing.
