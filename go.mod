@@ -1,4 +1,4 @@
-module Ws
+module wstunnel
 
 go 1.18
 
