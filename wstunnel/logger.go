@@ -1,4 +1,4 @@
-package utils
+package wstunnel
 
 import (
 	"go.uber.org/zap"

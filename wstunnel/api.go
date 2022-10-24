@@ -1,7 +1,6 @@
 package wstunnel
 
 import (
-	"Ws/utils"
 	_ "golang.org/x/mobile/bind"
 )
 
@@ -16,7 +15,7 @@ var channel = make(chan string)
 var tunnelCallBack TunnelCallBack
 
 func Initialise(development bool, logFilePath string) {
-	utils.InitLogger(development, logFilePath)
+	InitLogger(development, logFilePath)
 }
 
 // StartWSTunnel Builds and start a http client (Tcp server + Handles Bi directional connection between clients and Websocket server)
@@ -26,7 +25,7 @@ func StartWSTunnel(listenAddress string, wsAddress string) bool {
 		if tunnelCallBack != nil {
 			tunnelCallBack.Protect(fd)
 		} else {
-			utils.Logger.Info("Host app has not registered callback.")
+			Logger.Info("Host app has not registered callback.")
 		}
 	}, channel).Run()
 	if err != nil {
@@ -38,10 +37,10 @@ func StartWSTunnel(listenAddress string, wsAddress string) bool {
 // RegisterTunnelCallback is called from the host app.
 func RegisterTunnelCallback(callback TunnelCallBack) {
 	if callback != nil {
-		utils.Logger.Info("Connecting to host app.")
+		Logger.Info("Connecting to host app.")
 		tunnelCallBack = callback
 	} else {
-		utils.Logger.Info("Disconnecting from host app.")
+		Logger.Info("Disconnecting from host app.")
 		channel <- "done"
 	}
 }
