@@ -1,11 +1,11 @@
 package test
 
 import (
-	"Ws/wstunnel"
 	"fmt"
 	"net"
 	"testing"
 	"time"
+	"wstunnel/wstunnel"
 )
 
 var channel = make(chan string)
