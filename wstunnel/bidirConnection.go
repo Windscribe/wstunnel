@@ -1,7 +1,6 @@
 package wstunnel
 
 import (
-	"Ws/utils"
 	"io"
 	"net"
 	"os"
@@ -40,13 +39,13 @@ func (b *bidirConnection) sendTCPToWS() {
 		readSize, err := b.tcpConn.Read(data)
 		if err != nil && !os.IsTimeout(err) {
 			if err != io.EOF {
-				utils.Logger.Errorf("TCPToWS - Error while reading from TCP: %s", err)
+				Logger.Errorf("TCPToWS - Error while reading from TCP: %s", err)
 			}
 			return
 		}
 
 		if err := b.wsConn.WriteMessage(websocket.BinaryMessage, data[:readSize]); err != nil {
-			utils.Logger.Errorf("TCPToWS - Error while writing to WS: %s", err)
+			Logger.Errorf("TCPToWS - Error while writing to WS: %s", err)
 			return
 		}
 	}
@@ -58,11 +57,11 @@ func (b *bidirConnection) sendWSToTCP() {
 	for {
 		messageType, wsReader, err := b.wsConn.NextReader()
 		if err != nil {
-			utils.Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
+			Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
 			return
 		}
 		if messageType != websocket.BinaryMessage {
-			utils.Logger.Infof("WSToTCP - Got wrong message type from WS: %s", messageType)
+			Logger.Infof("WSToTCP - Got wrong message type from WS: %s", messageType)
 			return
 		}
 
@@ -70,13 +69,13 @@ func (b *bidirConnection) sendWSToTCP() {
 			readSize, err := wsReader.Read(data)
 			if err != nil {
 				if err != io.EOF {
-					utils.Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
+					Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
 				}
 				break
 			}
 
 			if _, err := b.tcpConn.Write(data[:readSize]); err != nil {
-				utils.Logger.Errorf("WSToTCP - Error while writing to TCP: %s", err)
+				Logger.Errorf("WSToTCP - Error while writing to TCP: %s", err)
 				return
 			}
 		}
