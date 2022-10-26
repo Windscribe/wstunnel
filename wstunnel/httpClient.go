@@ -1,6 +1,7 @@
 package wstunnel
 
 import (
+	"crypto/tls"
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
@@ -121,6 +122,10 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 		}
 		dialer.NetDial = func(network, addr string) (net.Conn, error) {
 			return customNetDialer.Dial(network, addr)
+		}
+		//Since the primary goal is to bypass firewalls for this "wrapper protocol", it's OK to connect direct to IP and ignore cert errors. The inner VPN protocol is still subject to X509 validation / OpenVPN CA checks, so connections would fail if traffic is being intercepted.
+		dialer.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
 		}
 		//Connect
 		wsConn, httpResponse, err = dialer.Dial(wsURL, nil)
