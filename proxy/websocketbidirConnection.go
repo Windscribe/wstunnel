@@ -1,4 +1,4 @@
-package wstunnel
+package proxy
 
 import (
 	"io"
@@ -9,27 +9,24 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-////////////////////////////////////////////////////////////////////////////////
-// bidirConnection
-////////////////////////////////////////////////////////////////////////////////
-
-// bidirConnection implements the Runner interface
-type bidirConnection struct {
+//WebSocketBiDirection
+//Creates an object to transfer data between the TCP clients and remote server in bidirectional way
+type WebSocketBiDirection struct {
 	tcpConn        net.Conn
 	wsConn         *websocket.Conn
 	tcpReadTimeout time.Duration
 }
 
-// NewBidirConnection to create an object to transfer data between the TCP socket and web connection in bidirectional way
 func NewBidirConnection(tcpConn net.Conn, wsConn *websocket.Conn, tcpReadTimeout time.Duration) Runner {
-	return &bidirConnection{
+	return &WebSocketBiDirection{
 		tcpConn:        tcpConn,
 		wsConn:         wsConn,
 		tcpReadTimeout: tcpReadTimeout,
 	}
 }
 
-func (b *bidirConnection) sendTCPToWS() {
+//sendTCPToWS copies tcp traffic to web socket connection.
+func (b *WebSocketBiDirection) sendTCPToWS() {
 	defer b.close()
 	data := make([]byte, BufferSize)
 	for {
@@ -51,7 +48,8 @@ func (b *bidirConnection) sendTCPToWS() {
 	}
 }
 
-func (b *bidirConnection) sendWSToTCP() {
+//sendWSToTCP copies web socket traffic to tcp connection.
+func (b *WebSocketBiDirection) sendWSToTCP() {
 	defer b.close()
 	data := make([]byte, BufferSize)
 	for {
@@ -82,13 +80,14 @@ func (b *bidirConnection) sendWSToTCP() {
 	}
 }
 
-func (b *bidirConnection) Run() error {
+func (b *WebSocketBiDirection) Run() error {
 	go b.sendTCPToWS()
 	b.sendWSToTCP()
 	return nil
 }
 
-func (b *bidirConnection) close() {
+// close closes connections.
+func (b *WebSocketBiDirection) close() {
 	_ = b.wsConn.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(time.Second))
 	_ = b.wsConn.Close()
 	_ = b.tcpConn.Close()

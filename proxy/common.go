@@ -1,4 +1,4 @@
-package wstunnel
+package proxy
 
 const (
 	// BufferSize is the size of the intermediate buffer for network packets

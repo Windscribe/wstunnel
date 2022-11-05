@@ -1,4 +1,4 @@
-package wstunnel
+package proxy
 
 import (
 	"go.uber.org/zap"
@@ -31,5 +31,5 @@ func InitLogger(development bool, logFilePath string) {
 }
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("Jan  2 15:04:05"))
+	enc.AppendString(t.Format("1 Jan; 15:04:05"))
 }
