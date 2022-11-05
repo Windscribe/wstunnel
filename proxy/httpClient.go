@@ -105,11 +105,11 @@ func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 	cfg := &tls.Config{
 		InsecureSkipVerify: true,
 	}
-	remoteUrl, err := h.toUrl(h.remoteServer)
+	remoteUrl, err := url.Parse(h.remoteServer)
 	if err != nil {
 		return nil, err
 	}
-	netConn, err := customNetDialer.Dial("tcp", remoteUrl)
+	netConn, err := customNetDialer.Dial("tcp", remoteUrl.Host)
 	if err != nil {
 		return nil, err
 	}
