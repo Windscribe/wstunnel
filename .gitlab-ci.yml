@@ -21,8 +21,8 @@ BuildAndroidLibrary:
   script:
     - gomobile init  
     - mkdir -p android
-    - cd wstunnel
-    - gomobile bind -o ../android/wstunnel.aar  -javapkg com.windscribe.websockettunnel
+    - cd proxy
+    - gomobile bind -o ../android/proxy.aar  -javapkg com.windscribe
     
   artifacts:
     paths:
@@ -37,8 +37,8 @@ BuildiOSFramework:
   script:
     - gomobile init  
     - mkdir -p iOS
-    - cd wstunnel
-    - gomobile bind -target ios/arm64 -o ../iOS/wstunnel.xcframework
+    - cd proxy
+    - gomobile bind -target ios/arm64 -o ../iOS/proxy.xcframework
     - cd ../
     
   artifacts:
