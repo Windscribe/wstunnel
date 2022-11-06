@@ -13,7 +13,7 @@ var Logger *zap.SugaredLogger
 func InitLogger(development bool, logFilePath string) {
 	cfg := zap.NewProductionConfig()
 	if logFilePath != "" {
-		cfg.OutputPaths = []string{logFilePath}
+		cfg.OutputPaths = []string{logFilePath, "stdout"}
 	}
 	cfg.Encoding = "console"
 	cfg.EncoderConfig.EncodeTime = syslogTimeEncoder

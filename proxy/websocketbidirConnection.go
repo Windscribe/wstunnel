@@ -15,20 +15,22 @@ type WebSocketBiDirection struct {
 	tcpConn        net.Conn
 	wsConn         *websocket.Conn
 	tcpReadTimeout time.Duration
+	mtu            int
 }
 
-func NewBidirConnection(tcpConn net.Conn, wsConn *websocket.Conn, tcpReadTimeout time.Duration) Runner {
+func NewBidirConnection(tcpConn net.Conn, wsConn *websocket.Conn, tcpReadTimeout time.Duration, mtu int) Runner {
 	return &WebSocketBiDirection{
 		tcpConn:        tcpConn,
 		wsConn:         wsConn,
 		tcpReadTimeout: tcpReadTimeout,
+		mtu:            mtu,
 	}
 }
 
 //sendTCPToWS copies tcp traffic to web socket connection.
 func (b *WebSocketBiDirection) sendTCPToWS() {
 	defer b.close()
-	data := make([]byte, BufferSize)
+	data := make([]byte, b.mtu)
 	for {
 		if b.tcpReadTimeout > 0 {
 			_ = b.tcpConn.SetReadDeadline(time.Now().Add(b.tcpReadTimeout))
@@ -51,7 +53,7 @@ func (b *WebSocketBiDirection) sendTCPToWS() {
 //sendWSToTCP copies web socket traffic to tcp connection.
 func (b *WebSocketBiDirection) sendWSToTCP() {
 	defer b.close()
-	data := make([]byte, BufferSize)
+	data := make([]byte, b.mtu)
 	for {
 		messageType, wsReader, err := b.wsConn.NextReader()
 		if err != nil {

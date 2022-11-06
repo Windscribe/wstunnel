@@ -19,15 +19,17 @@ type httpClient struct {
 	listenTCP    string
 	remoteServer string
 	tunnelType   int
+	mtu          int
 	callback     func(fd int)
 	channel      chan string
 }
 
-func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, callback func(fd int), channel chan string) Runner {
+func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, callback func(fd int), channel chan string) Runner {
 	return &httpClient{
 		listenTCP:    listenTCP,
 		remoteServer: remoteServer,
 		tunnelType:   tunnelType,
+		mtu:          mtu,
 		callback:     callback,
 		channel:      channel,
 	}
@@ -96,7 +98,7 @@ func handleStunnelConnection(h *httpClient, localConn net.Conn) {
 		return
 	}
 	Logger.Info("Starting stunnel bi-direction connection.")
-	b := NewStunnelBiDirection(localConn, remoteConn)
+	b := NewStunnelBiDirection(localConn, remoteConn, h.mtu)
 	go b.Run()
 }
 
@@ -114,7 +116,7 @@ func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 		return nil, err
 	}
 	cfg.ServerName = h.remoteServer
-	remoteConn := tls.UClient(netConn, cfg, tls.HelloRandomized)
+	remoteConn := tls.UClient(netConn, cfg, tls.HelloRandomizedALPN)
 	return remoteConn, nil
 }
 
@@ -125,7 +127,7 @@ func handleWsTunnelConnection(h *httpClient, tcpConn net.Conn) {
 		_ = tcpConn.Close()
 		return
 	}
-	b := NewBidirConnection(tcpConn, wsConn, time.Second*10)
+	b := NewBidirConnection(tcpConn, wsConn, time.Second*10, h.mtu)
 	go b.Run()
 }
 
@@ -143,6 +145,7 @@ func (h *httpClient) createDialer() *net.Dialer {
 	// Access underlying socket fd before connecting to it.
 	customNetDialer.Control = func(network, address string, c syscall.RawConn) error {
 		return c.Control(func(fd uintptr) {
+			Logger.Infof("Received socket fd %d", fd)
 			i := int(fd)
 			h.callback(i)
 		})
@@ -167,6 +170,11 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 			return customNetDialer.Dial(network, addr)
 		}
 		wsConn, httpResponse, err = dialer.Dial(wsURL, nil)
+		if wsConn != nil {
+			Logger.Info("Successfully connected to remote server.")
+		} else if err != nil {
+			Logger.Errorf("Failed to connect to remote server.. %s", err)
+		}
 		if httpResponse != nil {
 			switch httpResponse.StatusCode {
 			case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect, http.StatusPermanentRedirect:
