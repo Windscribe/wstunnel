@@ -28,8 +28,9 @@ func Initialise(development bool, logFilePath string) {
 // listenAddress = ":LocalPort"
 // remoteAddress = "wss://ip:port/path" or "ip:port"
 // tunnelType = WSTunnel = 1 or Stunnel = 2
-func StartProxy(listenAddress string, remoteAddress string, tunnelType int) bool {
-	err := NewHTTPClient(listenAddress, remoteAddress, tunnelType, func(fd int) {
+func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int) bool {
+	Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
+	err := NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
 		if tunnelCallBack != nil {
 			tunnelCallBack.Protect(fd)
 		} else {
@@ -45,10 +46,10 @@ func StartProxy(listenAddress string, remoteAddress string, tunnelType int) bool
 // RegisterTunnelCallback is called from the host app to register for events from library.
 func RegisterTunnelCallback(callback TunnelCallBack) {
 	if callback != nil {
-		Logger.Info("Connecting to host app.")
+		Logger.Info("New connection from host app.")
 		tunnelCallBack = callback
 	} else {
-		Logger.Info("Disconnecting from host app.")
+		Logger.Info("Disconnect signal from host app.")
 		channel <- "done"
 	}
 }
