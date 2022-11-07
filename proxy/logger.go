@@ -16,6 +16,7 @@ func InitLogger(development bool, logFilePath string) {
 		cfg.OutputPaths = []string{logFilePath, "stdout"}
 	}
 	cfg.Encoding = "console"
+	cfg.EncoderConfig.EncodeDuration = zapcore.MillisDurationEncoder
 	cfg.EncoderConfig.EncodeTime = syslogTimeEncoder
 	cfg.Development = development
 	if !development {
@@ -31,5 +32,5 @@ func InitLogger(development bool, logFilePath string) {
 }
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("1 Jan; 15:04:05"))
+	enc.AppendString(t.Format("1 Jan;15:04:05"))
 }
