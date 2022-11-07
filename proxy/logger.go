@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -16,12 +17,13 @@ func InitLogger(development bool, logFilePath string) {
 		cfg.OutputPaths = []string{logFilePath, "stdout"}
 	}
 	cfg.Encoding = "console"
-	cfg.EncoderConfig.EncodeDuration = zapcore.MillisDurationEncoder
+	cfg.EncoderConfig.EncodeDuration = zapcore.NanosDurationEncoder
+	cfg.EncoderConfig.EncodeLevel = levelEncoder
 	cfg.EncoderConfig.EncodeTime = syslogTimeEncoder
+	cfg.EncoderConfig.CallerKey = ""
 	cfg.Development = development
 	if !development {
 		cfg.EncoderConfig.StacktraceKey = ""
-		cfg.EncoderConfig.CallerKey = ""
 	}
 	zapLogger, err := cfg.Build()
 	if err != nil {
@@ -32,5 +34,9 @@ func InitLogger(development bool, logFilePath string) {
 }
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("1 Jan;15:04:05"))
+	enc.AppendString(t.Format("1 Jan; 15:04:05.000"))
+}
+
+func levelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(fmt.Sprintf("[%s] - ", level.CapitalString()))
 }
