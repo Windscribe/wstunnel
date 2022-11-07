@@ -345,7 +345,6 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 			cfg.ServerName = hostNoPort
 		}
 		tlsConn := tls.UClient(netConn, cfg, tls.HelloRandomizedNoALPN)
-		fmt.Println(len(tlsConn.Extensions))
 		netConn = tlsConn
 
 		if trace != nil && trace.TLSHandshakeStart != nil {
