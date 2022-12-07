@@ -6,6 +6,7 @@ replace github.com/gorilla/websocket => ./websocket
 
 require (
 	github.com/gorilla/websocket v1.4.2
+	github.com/refraction-networking/utls v1.1.5
 	go.uber.org/zap v1.23.0
 	golang.org/x/mobile v0.0.0-20221019142327-406ed3a7b8e4
 )
@@ -13,7 +14,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
-	github.com/refraction-networking/utls v1.1.5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 // indirect
