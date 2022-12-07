@@ -47,7 +47,7 @@ func (h *httpClient) Run() error {
 		return err
 	}
 	defer tcpConnection.Close()
-	Logger.Infof("Listening on 127.0.0.1:%s", h.listenTCP)
+	Logger.Infof("Listening on %s", h.listenTCP)
 	doneMutex := sync.Mutex{}
 	done := false
 	isDone := func() bool {
