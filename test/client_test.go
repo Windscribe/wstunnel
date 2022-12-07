@@ -22,7 +22,7 @@ func TestEndToEndConnection(t *testing.T) {
 	startServer(echoServerAddress, path)
 	//Tcp server
 	go func() {
-		err := proxy.NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, func(fd int) {
+		err := proxy.NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
 		}, channel).Run()
 		if err != nil {
