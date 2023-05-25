@@ -9,7 +9,3 @@
 4. To build ios framework Run `gomobile bind -target ios/arm64 -o proxy.xcframework`
    This builds platform specific libraries and bindings from exported functions.
 5. Exported binding are used by the host app.
-
-## What to do next
-1. Test , test and test more.
-2. Implement Ws tunnel protocol for iOS.
