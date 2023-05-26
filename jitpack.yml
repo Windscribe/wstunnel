@@ -14,8 +14,7 @@ before_install:
   - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
   - set -o pipefail
 install:
-  - wget https://storage.googleapis.com/golang/go1.18.linux-amd64.tar.gz
-  - tar -C ~ -xzvf go1.18.linux-amd64.tar.gz
-  - export PATH="~/go/bin:$PATH"
+  - export PATH="cfgo/bin:$PATH"
+  - go version
   - ./build.sh
   - ./gradlew build publishToMavenLocal
