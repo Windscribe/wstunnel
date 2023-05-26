@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# Run this using build.sh.
+# Run this using build_android.sh.
 
 ARG ubuntu=ubuntu
 FROM $ubuntu:focal
@@ -57,7 +57,7 @@ ADD build-boring.sh /boring/build-boring.sh
 RUN /boring/build-boring.sh
 
 # Build Go BoringCrypto syso.
-# build.sh copies it back out of the Docker image.
+# build_android.sh copies it back out of the Docker image.
 ADD goboringcrypto.h /boring/godriver/goboringcrypto.h
 ADD build-goboring.sh /boring/build-goboring.sh
 RUN /boring/build-goboring.sh
