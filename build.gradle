@@ -2,48 +2,45 @@ apply plugin: 'maven-publish'
 def LIB_GROUP_ID = 'com.windscribe'
 def LIB_ARTIFACT_ID = 'wstunnel'
 def LIB_VERSION = '1.0.0'
-def BUILD_DIR = 'publications/release'
 def aarFile = layout.buildDirectory.file("proxy.aar")
 def jarFile = layout.buildDirectory.file("proxy-sources.jar")
 
 task build() {
-      print "${buildDir}"
-      exec {
-         executable "./build.sh"
-         ignoreExitValue true
-      }
+    exec {
+        executable "./build.sh"
+        ignoreExitValue true
+    }
 }
 afterEvaluate {
-  publishing {
-    publications {
-        release(MavenPublication) {
-            groupId LIB_GROUP_ID
-            artifactId LIB_ARTIFACT_ID
-            version LIB_VERSION
-            artifact(aarFile)
-            artifact(jarFile)
-                 pom {
-                                                  name = 'wstunnel'
-                                                  description = 'This proxy forwards OpenVPN tcp traffic to WSTunnel or Stunnel servers'
-                                                  url = 'https://github.com/Windscribe/wstunnel'
-                                                  inceptionYear = '2023'
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId LIB_GROUP_ID
+                artifactId LIB_ARTIFACT_ID
+                version LIB_VERSION
+                artifact(aarFile)
+                artifact(jarFile)
+                pom {
+                    name = 'wstunnel'
+                    description = 'This library forwards OpenVPN tcp traffic to WSTunnel or Stunnel vpn server.'
+                    url = 'https://github.com/Windscribe/wstunnel'
+                    inceptionYear = '2023'
 
-                                                  licenses {
-                                                      license {
-                                                          name = 'MIT License'
-                                                          url = 'http://www.opensource.org/licenses/mit-license.php'
-                                                      }
-                                                  }
-                                                  developers {
-                                                      developer {
-                                                          id = ''
-                                                          name = 'Ginder Singh'
-                                                          email = 'ginder@windscribe.com'
-                                                      }
-                                                  }
-                                              }
-                       }
-           }
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'http://www.opensource.org/licenses/mit-license.php'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = '22023'
+                            name = 'Ginder Singh'
+                            email = 'ginder@windscribe.com'
+                        }
+                    }
+                }
+            }
+        }
     }
-
 }
