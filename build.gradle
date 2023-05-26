@@ -3,14 +3,13 @@ def LIB_GROUP_ID = 'com.windscribe'
 def LIB_ARTIFACT_ID = 'wstunnel'
 def LIB_VERSION = '1.0'
 def BUILD_DIR = './build'
-//
-// task buildSources(type: Exec) {
-//      exec {
-//                executable "./build.sh"
-//                ignoreExitValue true
-//       }
-//  }
 
+task buildSources(type: Exec) {
+     exec {
+               executable "./build.sh"
+               ignoreExitValue true
+      }
+ }
 publishing {
     publications {
         release(MavenPublication) {
