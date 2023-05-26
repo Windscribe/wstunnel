@@ -1,3 +1,7 @@
 install:
-  - apt-get install golang
+  - wget https://storage.googleapis.com/golang/go1.18.linux-amd64.tar.gz
+  - tar -C ~ -xzvf go1.18.linux-amd64.tar.gz
+  - export PATH="~/go/bin:$PATH"
   - go version
+env:
+  GOPATH: "~/go/bin"
