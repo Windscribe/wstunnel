@@ -7,6 +7,7 @@ def aarFile = layout.buildDirectory.file("proxy.aar")
 def jarFile = layout.buildDirectory.file("proxy-sources.jar")
 
 task build() {
+      print "${buildDir}"
       exec {
          executable "./build.sh"
          ignoreExitValue true
@@ -21,7 +22,28 @@ afterEvaluate {
             version LIB_VERSION
             artifact(aarFile)
             artifact(jarFile)
+                 pom {
+                                                  name = 'wstunnel'
+                                                  description = 'This proxy forwards OpenVPN tcp traffic to WSTunnel or Stunnel servers'
+                                                  url = 'https://github.com/Windscribe/wstunnel'
+                                                  inceptionYear = '2023'
+
+                                                  licenses {
+                                                      license {
+                                                          name = 'MIT License'
+                                                          url = 'http://www.opensource.org/licenses/mit-license.php'
+                                                      }
+                                                  }
+                                                  developers {
+                                                      developer {
+                                                          id = ''
+                                                          name = 'Ginder Singh'
+                                                          email = 'ginder@windscribe.com'
+                                                      }
+                                                  }
+                                              }
+                       }
            }
-       }
     }
+
 }
