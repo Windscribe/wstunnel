@@ -2,7 +2,6 @@
 set -xeuo pipefail
 
 SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip"
-# shellcheck disable=SC2088
 ANDROID_HOME="~/android-sdk"
 
 # Download Android SDK
@@ -18,30 +17,30 @@ mkdir -p "$ANDROID_HOME" .android \
 
 # Install Android Build Tool and Libraries
 $ANDROID_HOME/tools/bin/sdkmanager --update
-
-echo ":: Install api 27"
-echo ""
-# Install api 27
-$ANDROID_HOME/tools/bin/sdkmanager "build-tools;27.0.3" \
-    "platforms;android-27" \
-    "platform-tools"
-echo "Api 27: Install successfully"
-
-echo ":: Install api 28"
-echo ""
-# Install api 28
-$ANDROID_HOME/tools/bin/sdkmanager "build-tools;28.0.3" \
-    "platforms;android-28" \
-    "platform-tools"
-
-
-echo ":: Set ANDROID_HOME to ENV"
-echo ""
-
-mv .bashrc .bashrc_original
-echo -e "export ANDROID_HOME=$ANDROID_HOME\n" >> .bashrc
-cat .bashrc_original >> .bashrc
-rm .bashrc_original
-
-echo ":: Successfully"
-echo ""
+#
+#echo ":: Install api 27"
+#echo ""
+## Install api 27
+#$ANDROID_HOME/tools/bin/sdkmanager "build-tools;27.0.3" \
+#    "platforms;android-27" \
+#    "platform-tools"
+#echo "Api 27: Install successfully"
+#
+#echo ":: Install api 28"
+#echo ""
+## Install api 28
+#$ANDROID_HOME/tools/bin/sdkmanager "build-tools;28.0.3" \
+#    "platforms;android-28" \
+#    "platform-tools"
+#
+#
+#echo ":: Set ANDROID_HOME to ENV"
+#echo ""
+#
+#mv .bashrc .bashrc_original
+#echo -e "export ANDROID_HOME=$ANDROID_HOME\n" >> .bashrc
+#cat .bashrc_original >> .bashrc
+#rm .bashrc_original
+#
+#echo ":: Successfully"
+#echo ""
