@@ -16,5 +16,5 @@ before_install:
 install:
   - export PATH="cfgo/bin:$PATH"
   - go version
-  - ./build.sh
+  - ./build_android.sh
   - ./gradlew build publishToMavenLocal

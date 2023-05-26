@@ -6,7 +6,7 @@ def aarFile = layout.buildDirectory.file("proxy.aar")
 
 task build() {
     exec {
-        executable "./build.sh"
+        executable "./build_android.sh"
         ignoreExitValue true
     }
 }
