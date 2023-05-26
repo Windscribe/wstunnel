@@ -3,8 +3,8 @@ def LIB_GROUP_ID = 'com.windscribe'
 def LIB_ARTIFACT_ID = 'wstunnel'
 def LIB_VERSION = '1.0.0'
 def BUILD_DIR = 'publications/release'
-def aarFile = layout.buildDirectory.file("${BUILD_DIR}/proxy.aar")
-def jarFile = layout.buildDirectory.file("${BUILD_DIR}/proxy-sources.jar")
+def aarFile = layout.buildDirectory.file("proxy.aar")
+def jarFile = layout.buildDirectory.file("proxy-sources.jar")
 
 task build() {
       exec {
