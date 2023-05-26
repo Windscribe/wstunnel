@@ -19,7 +19,7 @@ afterEvaluate {
                 artifactId LIB_ARTIFACT_ID
                 version LIB_VERSION
                 artifact(aarFile)
-              //  artifact(jarFile)
+                artifact(jarFile)
                 pom {
                     name = 'wstunnel'
                     description = 'This library forwards OpenVPN tcp traffic to WSTunnel or Stunnel vpn server.'
