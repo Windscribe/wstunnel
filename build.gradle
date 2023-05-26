@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 def LIB_GROUP_ID = 'com.windscribe'
 def LIB_ARTIFACT_ID = 'wstunnel'
 def LIB_VERSION = '1.0'
-def BUILD_DIR = './build'
+def BUILD_DIR = './build/publications/release'
 
 task other(type: Exec) {
      exec {
@@ -10,6 +10,7 @@ task other(type: Exec) {
             ignoreExitValue true
       }
  }
+afterEvaluate {
 publishing {
     publications {
         release(MavenPublication) {
@@ -18,6 +19,7 @@ publishing {
             version LIB_VERSION
             artifact("${BUILD_DIR}/proxy.aar")
             artifact("${BUILD_DIR}/proxy-sources.jar")
+}
 }
 }
 }
