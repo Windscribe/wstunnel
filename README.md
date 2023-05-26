@@ -19,7 +19,7 @@ url "https://jitpack.io"
   }
 }`
 ### App gradle
-`implementation 'com.github.Windscribe:wstunnel:1.0.1''`
+`implementation 'com.github.Windscribe:wstunnel:1.0.0''`
 
 ## Dependencies
 1. Gorrila web socket
