@@ -4,19 +4,13 @@ def LIB_ARTIFACT_ID = 'wstunnel'
 def LIB_VERSION = '1.0'
 def BUILD_DIR = './build'
 
-task buildSources(type: Exec) {
+task other(type: Exec) {
      exec {
             executable "./build.sh"
             ignoreExitValue true
       }
  }
 publishing {
-repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url = uri(layout.buildDirectory.dir("repo"))
-        }
-    }
     publications {
         release(MavenPublication) {
             groupId LIB_GROUP_ID
