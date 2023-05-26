@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# Do not run directly; run build.sh, which runs this in Docker.
+# Do not run directly; run build_android.sh, which runs this in Docker.
 # This script builds goboringcrypto's syso, after boringssl has been built.
 
 export TERM=dumb
