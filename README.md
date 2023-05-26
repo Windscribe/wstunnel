@@ -20,3 +20,9 @@ url "https://jitpack.io"
 }`
 ### App gradle
 `implementation 'com.github.Windscribe:wstunnel:1.0.1''`
+
+## Dependencies
+1. Cloudflare go fork
+https://github.com/cloudflare/go
+2. Gorrila web socket
+https://github.com/gorilla/websocket
