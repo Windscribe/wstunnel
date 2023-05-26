@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -xeuo pipefail
 
-USER_NAME=$1
-
 SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip"
-ANDROID_HOME="/home/${USER_NAME}/android-sdk"
+# shellcheck disable=SC2088
+ANDROID_HOME="~/android-sdk"
 
 # Download Android SDK
 
