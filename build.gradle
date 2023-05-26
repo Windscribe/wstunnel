@@ -11,10 +11,6 @@ task build() {
          executable "./build.sh"
          ignoreExitValue true
       }
-      exec {
-               executable "./build.sh"
-               ignoreExitValue true
-            }
 }
 afterEvaluate {
   publishing {
