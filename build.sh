@@ -4,7 +4,9 @@ echo 'Clean up...'
 go mod tidy
 go install golang.org/x/mobile/cmd/gomobile@latest
 gomobile init
-mkdir build
+rm -rf ./build
+mkdir -p ./build/publications/release
 cd proxy
 echo 'Building...'
-gomobile bind -o ../build/proxy.aar  -javapkg com.windscribe
+gomobile bind -o ../build/publications/release/proxy.aar  -javapkg com.windscribe
+echo 'Build successful.'

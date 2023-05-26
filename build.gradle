@@ -1,25 +1,27 @@
 apply plugin: 'maven-publish'
 def LIB_GROUP_ID = 'com.windscribe'
 def LIB_ARTIFACT_ID = 'wstunnel'
-def LIB_VERSION = '1.0'
-def BUILD_DIR = './build/publications/release'
+def LIB_VERSION = '1.0.0'
+def BUILD_DIR = 'publications/release'
+def aarFile = layout.buildDirectory.file("${BUILD_DIR}/proxy.aar")
+def jarFile = layout.buildDirectory.file("${BUILD_DIR}/proxy-sources.jar")
 
-task other(type: Exec) {
-     exec {
-            executable "./build.sh"
-            ignoreExitValue true
+task build() {
+      exec {
+         executable "./build.sh"
+         ignoreExitValue true
       }
- }
+}
 afterEvaluate {
-publishing {
+  publishing {
     publications {
         release(MavenPublication) {
             groupId LIB_GROUP_ID
             artifactId LIB_ARTIFACT_ID
             version LIB_VERSION
-            artifact("${BUILD_DIR}/proxy.aar")
-            artifact("${BUILD_DIR}/proxy-sources.jar")
-}
-}
-}
+            artifact(aarFile)
+            artifact(jarFile)
+           }
+       }
+    }
 }
