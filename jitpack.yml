@@ -1,3 +1,5 @@
+before_install:
+  - curl https://gist.githubusercontent.com/noamtamim/b04ef67239d2b43638aa5a9a024a1937/raw/56f1a38dd88a3774b71a063822444f3961d61873/android-sdk-license.sh | sh
 install:
   - wget https://storage.googleapis.com/golang/go1.18.linux-amd64.tar.gz
   - tar -C ~ -xzvf go1.18.linux-amd64.tar.gz
