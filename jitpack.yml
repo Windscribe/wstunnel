@@ -20,3 +20,4 @@ install:
   - export PATH="~/go/bin:$PATH"
   - go version
   - ./build.sh
+  - ./gradlew build publishToMavenLocal
