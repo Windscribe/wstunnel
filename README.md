@@ -8,18 +8,8 @@
 4. Import library/framework in to project.
 
 
-## Android using gradle
-### Project gradle
-`allprojects {
-repositories {
-maven {
-name "jitpack"
-url "https://jitpack.io"
-     } 
-  }
-}`
-### App gradle
-`implementation 'com.github.Windscribe:wstunnel:1.0.0''`
+## Download from jitpack
+[![](https://jitpack.io/v/Windscribe/wstunnel.svg)](https://jitpack.io/#Windscribe/wstunnel)
 
 ## Dependencies
 1. Gorrila web socket
