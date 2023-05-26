@@ -1,4 +1,4 @@
-export PATH=$PATH:cfgo/bin
+export PATH=$PATH:~/go/bin
 go mod tidy
 go install golang.org/x/mobile/cmd/gomobile@latest
 gomobile init
