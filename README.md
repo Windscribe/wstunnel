@@ -9,6 +9,7 @@
 
 
 ## Android using gradle
+### Project gradle
 `allprojects {
 repositories {
 maven {
@@ -17,5 +18,5 @@ url "https://jitpack.io"
      } 
   }
 }`
-
-`implementation 'com.github.Ginder-Singh:wstest:1.0.0'`
+### App gradle
+`implementation 'com.github.Windscribe:wstunnel:1.0.1''`
