@@ -1,5 +1,5 @@
 # Windscribe Tunnel Proxy for mobile apps.
- This proxy forwards OpenVPN tcp traffic to WSTunnel or Stunnel servers.
+ This library forwards OpenVPN tcp traffic to WSTunnel or Stunnel server.
 
 ## Build
 1. Run `go mod tidy` in wstunnel directory.
