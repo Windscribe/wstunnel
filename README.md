@@ -1,15 +1,16 @@
 # Windscribe Tunnel Proxy for mobile apps.
- This proxy forwards OpenVPN tcp traffic to WSTunnel or Stunnel servers.
+ This library forwards OpenVPN tcp traffic to WSTunnel or Stunnel server.
 
 ## Build
-1. Run `go mod tidy` in ws directory.
-2. Install gomobile tools if not already installed.
-   [Download](https://github.com/golang/mobile).
-3. To build android library Run `gomobile bind -o proxy.aar  -javapkg com.windscribe`
-4. To build ios framework Run `gomobile bind -target ios/arm64 -o proxy.xcframework`
-   This builds platform specific libraries and bindings from exported functions.
-5. Exported binding are used by the host app.
+1. To build android library Run `build_android.sh`. (Require android sdk + ndk)
+2. To build ios framework Run `build_ios.sh` (Requires xcode build tools)
+3. This builds platform specific libraries and bindings from exported functions.
+4. Import library/framework in to project.
 
-## What to do next
-1. Test , test and test more.
-2. Implement Ws tunnel protocol for iOS.
+
+## Download from jitpack
+[![](https://jitpack.io/v/Windscribe/wstunnel.svg)](https://jitpack.io/#Windscribe/wstunnel)
+
+## Dependencies
+1. Gorrila web socket
+https://github.com/gorilla/websocket

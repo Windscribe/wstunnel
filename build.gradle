@@ -1,0 +1,24 @@
+apply plugin: 'maven-publish'
+def LIB_GROUP_ID = 'com.windscribe'
+def LIB_ARTIFACT_ID = 'proxy'
+def LIB_VERSION = '1.0.0'
+def aarFile = layout.buildDirectory.file("proxy.aar")
+
+task build() {
+    exec {
+        executable "./build_android.sh"
+        ignoreExitValue true
+    }
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId LIB_GROUP_ID
+                artifactId LIB_ARTIFACT_ID
+                version LIB_VERSION
+                artifact(aarFile)
+            }
+        }
+    }
+}
