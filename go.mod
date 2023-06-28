@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/refraction-networking/utls v1.1.5
 	go.uber.org/zap v1.23.0
-	golang.org/x/mobile v0.0.0-20221019142327-406ed3a7b8e4
+	golang.org/x/mobile v0.0.0-20230427221453-e8d11dd0ba41
 )
 
 require (
