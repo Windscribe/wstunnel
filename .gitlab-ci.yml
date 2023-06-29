@@ -18,32 +18,33 @@ BuildDesktop:
   extends:
     - ".go"
   script:
+    - chmod +x build_desktop.sh
     - ./build_desktop.sh
   artifacts:
     paths:
-      - ./desktop
+      - ./build
 
-BuildAndroidLibrary:
-  stage: build
-  extends:
-    - ".go"
-  script:
-    - ./build_android.sh
-
-  artifacts:
-    paths:
-      - ./android
-
-BuildiOSFramework:
-  stage: build
-  tags: [ macos11 ]
-  extends:
-    - ".go"
-  script:
-    - ./build_ios.sh
-  artifacts:
-    paths:
-      - ./iOS
+#BuildAndroidLibrary:
+#  stage: build
+#  extends:
+#    - ".go"
+#  script:
+#    - ./build_android.sh
+#
+#  artifacts:
+#    paths:
+#      - ./android
+#
+#BuildiOSFramework:
+#  stage: build
+#  tags: [ macos11 ]
+#  extends:
+#    - ".go"
+#  script:
+#    - ./build_ios.sh
+#  artifacts:
+#    paths:
+#      - ./iOS
 
 ".go":
   stage: build
