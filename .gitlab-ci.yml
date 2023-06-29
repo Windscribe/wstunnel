@@ -38,7 +38,7 @@ BuildAndroidLibrary:
 
 BuildiOSFramework:
   stage: build
-  tags: [ macos11 ]
+  tags: [macos11qt6]
   extends:
     - ".go"
   script:
