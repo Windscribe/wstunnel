@@ -48,15 +48,7 @@ BuildAndroidLibrary:
 ".ndk":
   stage: build
   before_script:
-    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-    - unzip -d android-sdk-linux android-sdk.zip
-    - echo y | android-sdk-linux/tools/bin/sdkmanager "ndk;21.3.6528147" >/dev/null
-    - export ANDROID_HOME=$PWD/android-sdk-linux
-    - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
-    - chmod +x ./gradlew
-    - set +o pipefail
-    - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
-    - set -o pipefail
+    - extras ndk -n 21.3.6528147
 
 ".go":
   stage: build
