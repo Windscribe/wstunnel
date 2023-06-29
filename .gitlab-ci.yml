@@ -24,27 +24,29 @@ BuildDesktop:
     paths:
       - ./build
 
-#BuildAndroidLibrary:
-#  stage: build
-#  extends:
-#    - ".go"
-#  script:
-#    - ./build_android.sh
-#
-#  artifacts:
-#    paths:
-#      - ./android
-#
-#BuildiOSFramework:
-#  stage: build
-#  tags: [ macos11 ]
-#  extends:
-#    - ".go"
-#  script:
-#    - ./build_ios.sh
-#  artifacts:
-#    paths:
-#      - ./iOS
+BuildAndroidLibrary:
+  stage: build
+  extends:
+    - ".go"
+  before_script:
+    - extras ndk
+  script:
+    - ./build_android.sh
+  artifacts:
+    paths:
+      - ./build
+
+BuildiOSFramework:
+  stage: build
+  tags: [ macos11 ]
+  extends:
+    - ".go"
+  script:
+    - chmod +x build_ios.sh
+    - ./build_ios.sh
+  artifacts:
+    paths:
+      - ./iOS
 
 ".go":
   stage: build
