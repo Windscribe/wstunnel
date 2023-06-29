@@ -28,7 +28,6 @@ BuildAndroidLibrary:
   stage: build
   extends:
     - ".go"
-    - ".ndk"
   script:
     - ./build_android.sh
   artifacts:
@@ -45,11 +44,6 @@ BuildAndroidLibrary:
 #    paths:
 #      - ./build
 
-".ndk":
-  stage: build
-  before_script:
-    - extras ndk -n 21.3.6528147
-
 ".go":
   stage: build
   before_script:
@@ -57,3 +51,4 @@ BuildAndroidLibrary:
     - apk --no-cache add curl
     - apk add go
     - export PATH=$PATH:~/go/bin
+    - extras ndk -n 21.3.6528147
