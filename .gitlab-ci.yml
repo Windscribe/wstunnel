@@ -42,7 +42,7 @@ BuildiOSFramework:
     - ./build_ios.sh
   artifacts:
     paths:
-      - ./iOS
+      - ./build
 
 ".go":
   stage: build
