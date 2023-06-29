@@ -37,8 +37,6 @@ BuildAndroidLibrary:
 BuildiOSFramework:
   stage: build
   tags: [macos11qt6]
-  extends:
-    - ".go"
   script:
     - chmod +x build_ios.sh
     - ./build_ios.sh
