@@ -6,8 +6,11 @@ stages:
 
 format:
   stage: test
-  extends:
-    - ".go"
+  before_script:
+    - apk -U upgrade
+    - apk --no-cache add curl
+    - apk add go
+    - export PATH=$PATH:~/go/bin
   script:
     - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
@@ -15,8 +18,11 @@ format:
 
 BuildDesktop:
   stage: build
-  extends:
-    - ".go"
+  before_script:
+    - apk -U upgrade
+    - apk --no-cache add curl
+    - apk add go
+    - export PATH=$PATH:~/go/bin
   script:
     - chmod +x build_desktop.sh
     - ./build_desktop.sh
@@ -26,8 +32,12 @@ BuildDesktop:
 
 BuildAndroidLibrary:
   stage: build
-  extends:
-    - ".go"
+  before_script:
+    - apk -U upgrade
+    - apk --no-cache add curl
+    - apk add go
+    - export PATH=$PATH:~/go/bin
+    - extras ndk -n 21.3.6528147
   script:
     - ./build_android.sh
   artifacts:
@@ -43,12 +53,3 @@ BuildiOSFramework:
   artifacts:
     paths:
       - ./build
-
-".go":
-  stage: build
-  before_script:
-    - apk -U upgrade
-    - apk --no-cache add curl
-    - apk add go
-    - export PATH=$PATH:~/go/bin
-    - extras ndk -n 21.3.6528147
