@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-rm build
-mkdir build
+rm -r build
 platforms=("windows/amd64" "windows/386" "darwin/amd64")
 
 for platform in "${platforms[@]}"
