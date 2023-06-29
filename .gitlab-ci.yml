@@ -4,25 +4,25 @@ stages:
   - test
   - build
 
-#format:
-#  stage: test
-#  extends:
-#    - ".go"
-#  script:
-#    - go fmt $(go list ./... | grep -v /vendor/)
-#    - go vet $(go list ./... | grep -v /vendor/)
-#    - go test -race $(go list ./... | grep -v /vendor/)
-#
-#BuildDesktop:
-#  stage: build
-#  extends:
-#    - ".go"
-#  script:
-#    - chmod +x build_desktop.sh
-#    - ./build_desktop.sh
-#  artifacts:
-#    paths:
-#      - ./build
+format:
+  stage: test
+  extends:
+    - ".go"
+  script:
+    - go fmt $(go list ./... | grep -v /vendor/)
+    - go vet $(go list ./... | grep -v /vendor/)
+    - go test -race $(go list ./... | grep -v /vendor/)
+
+BuildDesktop:
+  stage: build
+  extends:
+    - ".go"
+  script:
+    - chmod +x build_desktop.sh
+    - ./build_desktop.sh
+  artifacts:
+    paths:
+      - ./build
 
 BuildAndroidLibrary:
   stage: build
@@ -34,15 +34,15 @@ BuildAndroidLibrary:
     paths:
       - ./build
 
-#BuildiOSFramework:
-#  stage: build
-#  tags: [ macos11qt6 ]
-#  script:
-#    - chmod +x build_ios.sh
-#    - ./build_ios.sh
-#  artifacts:
-#    paths:
-#      - ./build
+BuildiOSFramework:
+  stage: build
+  tags: [ macos11qt6 ]
+  script:
+    - chmod +x build_ios.sh
+    - ./build_ios.sh
+  artifacts:
+    paths:
+      - ./build
 
 ".go":
   stage: build
