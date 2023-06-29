@@ -28,6 +28,7 @@ BuildAndroidLibrary:
   stage: build
   extends:
     - ".go"
+    - ".ndk"
   script:
     - ./build_android.sh
   artifacts:
@@ -36,13 +37,29 @@ BuildAndroidLibrary:
 
 BuildiOSFramework:
   stage: build
-  tags: [macos11qt6]
+  tags: [ macos11qt6 ]
   script:
     - chmod +x build_ios.sh
     - ./build_ios.sh
   artifacts:
     paths:
       - ./build
+
+".ndk":
+  stage: build
+  before_script:
+    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+    - unzip -d android-sdk-linux android-sdk.zip
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-33" >/dev/null
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" >/dev/null
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;33.0.2" >/dev/null
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "ndk;21.3.6528147" >/dev/null
+    - export ANDROID_HOME=$PWD/android-sdk-linux
+    - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
+    - chmod +x ./gradlew
+    - set +o pipefail
+    - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+    - set -o pipefail
 
 ".go":
   stage: build
@@ -51,4 +68,3 @@ BuildiOSFramework:
     - apk --no-cache add curl
     - apk add go
     - export PATH=$PATH:~/go/bin
-    - extras ndk
