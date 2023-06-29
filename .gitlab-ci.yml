@@ -28,8 +28,6 @@ BuildAndroidLibrary:
   stage: build
   extends:
     - ".go"
-  before_script:
-    - extras ndk
   script:
     - ./build_android.sh
   artifacts:
@@ -55,3 +53,4 @@ BuildiOSFramework:
     - apk --no-cache add curl
     - apk add go
     - export PATH=$PATH:~/go/bin
+    - extras ndk
