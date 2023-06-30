@@ -28,7 +28,7 @@ func Initialise(development bool, logFilePath string) {
 // listenAddress = ":LocalPort"
 // remoteAddress = "wss://ip:port/path" or "ip:port"
 // tunnelType = WSTunnel = 1 or Stunnel = 2
-func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int) bool {
+func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int, extraPadding bool) bool {
 	Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
 	err := NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
 		if tunnelCallBack != nil {
@@ -36,7 +36,7 @@ func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu 
 		} else {
 			Logger.Info("Host app has not registered callback.")
 		}
-	}, channel).Run()
+	}, channel, extraPadding).Run()
 	if err != nil {
 		return false
 	}

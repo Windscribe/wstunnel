@@ -24,7 +24,7 @@ func TestEndToEndConnection(t *testing.T) {
 	go func() {
 		err := proxy.NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
-		}, channel).Run()
+		}, channel, false).Run()
 		if err != nil {
 			t.Fail()
 			return
