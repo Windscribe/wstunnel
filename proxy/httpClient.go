@@ -2,8 +2,10 @@ package proxy
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/websocket"
 	tls "github.com/refraction-networking/utls"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -22,9 +24,10 @@ type httpClient struct {
 	mtu          int
 	callback     func(fd int)
 	channel      chan string
+	extraPadding bool
 }
 
-func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, callback func(fd int), channel chan string) Runner {
+func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, callback func(fd int), channel chan string, extraPadding bool) Runner {
 	return &httpClient{
 		listenTCP:    listenTCP,
 		remoteServer: remoteServer,
@@ -32,6 +35,7 @@ func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, call
 		mtu:          mtu,
 		callback:     callback,
 		channel:      channel,
+		extraPadding: extraPadding,
 	}
 }
 
@@ -116,7 +120,35 @@ func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 		return nil, err
 	}
 	cfg.ServerName = h.remoteServer
-	remoteConn := tls.UClient(netConn, cfg, tls.HelloRandomizedALPN)
+
+	remoteConn := tls.UClient(netConn, cfg, tls.HelloCustom)
+	clientHelloSpec, err := tls.UTLSIdToSpec(tls.HelloRandomizedALPN)
+	if err != nil {
+		return nil, fmt.Errorf("uTlsConn.generateRandomizedSpec error: %+v", err)
+	}
+
+	if h.extraPadding {
+		rand.Seed(time.Now().Unix())
+		alreadyHasPadding := false
+		for _, ext := range clientHelloSpec.Extensions {
+			if _, ok := ext.(*tls.UtlsPaddingExtension); ok {
+				alreadyHasPadding = true
+				ext.(*tls.UtlsPaddingExtension).PaddingLen = 2000 + rand.Intn(10000)
+				ext.(*tls.UtlsPaddingExtension).WillPad = true
+				ext.(*tls.UtlsPaddingExtension).GetPaddingLen = nil
+				break
+			}
+		}
+		if !alreadyHasPadding {
+			clientHelloSpec.Extensions = append(clientHelloSpec.Extensions, &tls.UtlsPaddingExtension{PaddingLen: 2000 + rand.Intn(10000), WillPad: true, GetPaddingLen: nil})
+		}
+	}
+
+	err = remoteConn.ApplyPreset(&clientHelloSpec)
+	if err != nil {
+		return nil, fmt.Errorf("uTlsConn.ApplyPreset error: %+v", err)
+	}
+
 	return remoteConn, nil
 }
 
