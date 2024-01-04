@@ -119,7 +119,7 @@ func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg.ServerName = h.remoteServer
+	cfg.ServerName = remoteUrl.Hostname()
 
 	remoteConn := tls.UClient(netConn, cfg, tls.HelloCustom)
 	clientHelloSpec, err := tls.UTLSIdToSpec(tls.HelloRandomizedALPN)
