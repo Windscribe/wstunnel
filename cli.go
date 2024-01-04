@@ -33,7 +33,7 @@ func init() {
 	_ = rootCmd.MarkPersistentFlagRequired("remoteAddress")
 	rootCmd.PersistentFlags().IntVarP(&tunnelType, "tunnelType", "t", 1, "WStunnel > 1 , Stunnel > 2")
 	rootCmd.PersistentFlags().IntVarP(&mtu, "mtu", "m", 1500, "1500")
-	rootCmd.PersistentFlags().BoolVarP(&dev, "extraTlsPadding", "p", false, "Add Extra TLS Padding to ClientHello packet.")
+	rootCmd.PersistentFlags().BoolVarP(&extraTlsPadding, "extraTlsPadding", "p", false, "Add Extra TLS Padding to ClientHello packet.")
 	rootCmd.PersistentFlags().StringVarP(&logFilePath, "logFilePath", "f", "", "Path to log file > file.log")
 	_ = rootCmd.MarkPersistentFlagRequired("logFilePath")
 	rootCmd.PersistentFlags().BoolVarP(&dev, "dev", "d", false, "Turns on verbose logging.")
