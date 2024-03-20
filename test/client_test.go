@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 	"time"
-	"wstunnel/proxy"
+	"wstunnel"
 )
 
 var channel = make(chan string)
@@ -17,12 +17,12 @@ var tcpServerAddress = "localhost:1194"
 var dataToSend = []byte("Send me this message back.")
 
 func TestEndToEndConnection(t *testing.T) {
-	proxy.InitLogger(true, "")
+	main.InitLogger(true, "")
 	//Ws server
 	startServer(echoServerAddress, path)
 	//Tcp server
 	go func() {
-		err := proxy.NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
+		err := main.NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
 		}, channel, false).Run()
 		if err != nil {

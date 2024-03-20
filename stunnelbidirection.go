@@ -1,4 +1,4 @@
-package proxy
+package main
 
 import (
 	tls "github.com/refraction-networking/utls"
@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-//StunnelBiDirection
-//creates an object to transfer data between the TCP clients and remote server in bidirectional way
+// StunnelBiDirection
+// creates an object to transfer data between the TCP clients and remote server in bidirectional way
 type StunnelBiDirection struct {
 	localConn  net.Conn
 	remoteConn *tls.UConn
@@ -27,7 +27,7 @@ func (s *StunnelBiDirection) Run() error {
 	return nil
 }
 
-//sendTCPToStunnel copies tcp traffic to remote server
+// sendTCPToStunnel copies tcp traffic to remote server
 func (s *StunnelBiDirection) sendTCPToStunnel() {
 	defer s.close()
 	data := make([]byte, s.mtu)
@@ -47,7 +47,7 @@ func (s *StunnelBiDirection) sendTCPToStunnel() {
 	}
 }
 
-//sendStunnelToTCP copies remote server traffic to tcp connection.
+// sendStunnelToTCP copies remote server traffic to tcp connection.
 func (s *StunnelBiDirection) sendStunnelToTCP() {
 	defer s.close()
 	data := make([]byte, s.mtu)

@@ -1,22 +1,22 @@
-package proxy
+package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/websocket"
 	tls "github.com/refraction-networking/utls"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
 	"sync"
 	"syscall"
 	"time"
-	"math/rand"
-	"fmt"
 )
 
-//httpClient
-//sets up tcp server and remote connections.
-////////////////////////////////////////////////////////////////////////////////
+// httpClient
+// sets up tcp server and remote connections.
+// //////////////////////////////////////////////////////////////////////////////
 type httpClient struct {
 	listenTCP    string
 	remoteServer string
@@ -39,7 +39,7 @@ func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, call
 	}
 }
 
-//Run stars tcp server and connect to remote server.
+// Run stars tcp server and connect to remote server.
 func (h *httpClient) Run() error {
 	tcpAdr, err := net.ResolveTCPAddr("tcp", h.listenTCP)
 	if err != nil {
@@ -127,7 +127,7 @@ func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 		return nil, fmt.Errorf("uTlsConn.generateRandomizedSpec error: %+v", err)
 	}
 
-	if (h.extraPadding) {
+	if h.extraPadding {
 		rand.Seed(time.Now().Unix())
 		alreadyHasPadding := false
 		for _, ext := range clientHelloSpec.Extensions {
@@ -171,7 +171,7 @@ func (h *httpClient) toUrl(asString string) (string, error) {
 	return asURL.String(), nil
 }
 
-//createDialer creates custom dialer which provides access to socket fd
+// createDialer creates custom dialer which provides access to socket fd
 func (h *httpClient) createDialer() *net.Dialer {
 	customNetDialer := &net.Dialer{}
 	// Access underlying socket fd before connecting to it.
@@ -185,7 +185,7 @@ func (h *httpClient) createDialer() *net.Dialer {
 	return customNetDialer
 }
 
-//createWsConnection creates a connection to websocket server.
+// createWsConnection creates a connection to websocket server.
 func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Conn, err error) {
 	wsConnectUrl := h.remoteServer
 	for {

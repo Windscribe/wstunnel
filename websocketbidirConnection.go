@@ -1,4 +1,4 @@
-package proxy
+package main
 
 import (
 	"io"
@@ -9,8 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//WebSocketBiDirection
-//Creates an object to transfer data between the TCP clients and remote server in bidirectional way
+// WebSocketBiDirection
+// Creates an object to transfer data between the TCP clients and remote server in bidirectional way
 type WebSocketBiDirection struct {
 	tcpConn        net.Conn
 	wsConn         *websocket.Conn
@@ -27,7 +27,7 @@ func NewBidirConnection(tcpConn net.Conn, wsConn *websocket.Conn, tcpReadTimeout
 	}
 }
 
-//sendTCPToWS copies tcp traffic to web socket connection.
+// sendTCPToWS copies tcp traffic to web socket connection.
 func (b *WebSocketBiDirection) sendTCPToWS() {
 	defer b.close()
 	data := make([]byte, b.mtu)
@@ -50,7 +50,7 @@ func (b *WebSocketBiDirection) sendTCPToWS() {
 	}
 }
 
-//sendWSToTCP copies web socket traffic to tcp connection.
+// sendWSToTCP copies web socket traffic to tcp connection.
 func (b *WebSocketBiDirection) sendWSToTCP() {
 	defer b.close()
 	data := make([]byte, b.mtu)
