@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"wstunnel"
 )
 
 // EchoServer simple web socket server for testing.
@@ -53,7 +52,6 @@ func startServer(address string, path string) *EchoServer {
 func (server *EchoServer) echoMessageBack(clientId string, message []byte) {
 	err := server.clients[clientId].WriteMessage(websocket.BinaryMessage, message)
 	if err != nil {
-		main.Logger.Error("Error writing message to client: %s", err)
 		return
 	}
 }
