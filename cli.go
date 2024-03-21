@@ -1,10 +1,10 @@
 package main
 
 import (
-	"C"
+	//"C"
 	"github.com/spf13/cobra"
 	"os"
-	_ "runtime/cgo"
+	//_ "runtime/cgo"
 )
 
 var listenAddress string
