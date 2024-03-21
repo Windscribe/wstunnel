@@ -1,9 +1,10 @@
 package main
 
 import (
+	"C"
 	"github.com/spf13/cobra"
 	"os"
-	"wstunnel/proxy"
+	_ "runtime/cgo"
 )
 
 var listenAddress string
@@ -19,8 +20,8 @@ var rootCmd = &cobra.Command{
 	Short: "Starts local proxy and connects to server.",
 	Long:  "Starts local proxy and sets up connection to the server. At minimum it requires remote server address and log file path.",
 	Run: func(cmd *cobra.Command, args []string) {
-		proxy.Initialise(dev, logFilePath)
-		started := proxy.StartProxy(listenAddress, remoteAddress, tunnelType, mtu, extraTlsPadding)
+		Initialise(dev, logFilePath)
+		started := StartProxy(listenAddress, remoteAddress, tunnelType, mtu, extraTlsPadding)
 		if started == false {
 			os.Exit(0)
 		}
@@ -44,4 +45,45 @@ func main() {
 	if err != nil {
 		return
 	}
+}
+
+//export Channel is used by host app to send events to http client.
+var channel = make(chan string)
+
+//export Callback is used by http client to send events to host app
+var primaryListenerSocketFd int = -1
+
+//export WSTunnel wraps OpenVPN tcp traffic in to Websocket
+const WSTunnel = 1
+
+//export Stunnel wraps OpenVPN tcp traffic in to regular tcp.
+const Stunnel = 2
+
+//export Initialise
+func Initialise(development bool, logFilePath string) {
+	InitLogger(development, logFilePath)
+}
+
+//export StartProxy
+func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int, extraPadding bool) bool {
+	Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
+	err := NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
+		primaryListenerSocketFd = fd
+		Logger.Info("Socket ready to protect.")
+	}, channel, extraPadding).Run()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+//export Stop
+func Stop() {
+	Logger.Info("Disconnect signal from host app.")
+	channel <- "done"
+}
+
+//export GetPrimaryListenerSocketFd
+func GetPrimaryListenerSocketFd() int {
+	return primaryListenerSocketFd
 }

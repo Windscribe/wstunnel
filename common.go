@@ -1,4 +1,4 @@
-package proxy
+package main
 
 const (
 	// BufferSize is the size of the intermediate buffer for network packets
