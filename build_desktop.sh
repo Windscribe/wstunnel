@@ -12,7 +12,8 @@ do
 		output_name+='.exe'
 	fi
 	echo "Building $output_name"
-	env GOOS="$GOOS" GOARCH="$GOARCH" go build -o build/$output_name -a -gcflags=all="-l -B" -ldflags="-w -s"
+	mkdir -p build/desktop
+	env GOOS="$GOOS" GOARCH="$GOARCH" go build -o build/desktop/$output_name -a -gcflags=all="-l -B" -ldflags="-w -s"
 	if [ $? -ne 0 ]; then
    		echo 'An error has occurred!'
 		exit 1
