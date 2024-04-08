@@ -14,28 +14,28 @@ echo "$buildCommand"
 
 # For ARM64
 output_dir="./build/android/arm64-v8a"
-TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang")
+TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang")
 # shellcheck disable=SC2086
 GOOS=android GOARCH=arm64 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
 rm $output_dir/libproxy.h
 
 ## For ARMv7
 output_dir="./build/android/armeabi-v7a"
-TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/armv7a-linux-androideabi30-clang")
+TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/armv7a-linux-androideabi21-clang")
 # shellcheck disable=SC2086
 GOOS=android GOARCH=arm CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
 rm $output_dir/libproxy.h
 
 ## For x86
 output_dir="./build/android/x86"
-TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android30-clang")
+TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android21-clang")
 # shellcheck disable=SC2086
 GOOS=android GOARCH=386 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
 rm $output_dir/libproxy.h
 
 ## For x86_64
 output_dir="./build/android/x86_64"
-TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/x86_64-linux-android30-clang")
+TOOLCHAIN=("$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/x86_64-linux-android21-clang")
 # shellcheck disable=SC2086
 GOOS=android GOARCH=amd64 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
 rm $output_dir/libproxy.h
