@@ -8,7 +8,7 @@ mkdir -p build/android/x86_64
 export CGO_ENABLED=1
 export CGO_CFLAGS="-fstack-protector-strong"
 # shellcheck disable=SC2016
-buildCommand='go build -ldflags "-s -w" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go logger.go httpclient.go stunnelbidirection.go websocketbidirConnection.go common.go'
+buildCommand='go build -ldflags "-s -w" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go logger.go httpClient.go stunnelbidirection.go websocketbidirConnection.go common.go'
 echo "$buildCommand"
 
 # For ARM64
