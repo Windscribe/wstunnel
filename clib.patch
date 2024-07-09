@@ -1,0 +1,23 @@
+Subject: [PATCH] clib
+---
+Index: cli.go
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/cli.go b/cli.go
+--- a/cli.go	(revision ac075a725b30b5d3a0a830bbc4615d11b2674fb6)
++++ b/cli.go	(date 1720546823021)
+@@ -1,10 +1,10 @@
+ package main
+ 
+ import (
+-	//"C"
++	"C"
+ 	"github.com/spf13/cobra"
+ 	"os"
+-	//_ "runtime/cgo"
++	_ "runtime/cgo"
+ )
+ 
+ var listenAddress string
