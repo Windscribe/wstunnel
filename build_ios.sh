@@ -26,6 +26,10 @@ build() {
 build "appletvos" "17.0" "AppleTVOS"
 echo "Apple TVOS framework at ./build/appletvos/arm64/proxy.a"
 
+# Build for Apple TV Simulator
+build "appletvsimulator" "17.0" "AppleTVSimulator"
+echo "Apple TVOS framework at ./build/appletvsimulator/arm64/proxy.a"
+
 # Build for iPhoneOS
 build "iphoneos" "12.0" "iPhoneOS"
 echo "iPhoneOS framework at ./build/iphoneos/arm64/proxy.a"
@@ -49,6 +53,7 @@ cp ./build/appletvos/arm64/*.h "$combined_headers_dir"
 rm -rf ./build/Proxy.xcframework
 xcodebuild -create-xcframework \
     -library ./build/appletvos/arm64/proxy.a -headers "$combined_headers_dir" \
+    -library ./build/appletvsimulator/arm64/proxy.a -headers "$combined_headers_dir" \
     -library ./build/iphoneos/arm64/proxy.a -headers "$combined_headers_dir" \
     -library ./build/iphonesimulator/arm64/proxy.a -headers "$combined_headers_dir" \
     -output ./build/Proxy.xcframework
