@@ -34,9 +34,9 @@ func InitLogger(development bool, logFilePath string) {
 }
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("1 Jan; 15:04:05.000"))
+	enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
 }
 
 func levelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(fmt.Sprintf("[%s] - ", level.CapitalString()))
+	enc.AppendString(fmt.Sprintf("[%s]-", level))
 }
