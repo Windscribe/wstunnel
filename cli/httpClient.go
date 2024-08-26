@@ -206,7 +206,9 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 		Logger.Infof("%s - Connecting to %s", remoteAddr, wsURL)
 		var httpResponse *http.Response
 		dialer := *websocket.DefaultDialer
-		dialer.TLSClientConfig.InsecureSkipVerify = true
+		dialer.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
 		customNetDialer := h.createDialer()
 		dialer.NetDial = func(network, addr string) (net.Conn, error) {
 			return customNetDialer.Dial(network, addr)
