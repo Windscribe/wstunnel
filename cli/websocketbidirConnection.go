@@ -1,12 +1,11 @@
-package main
+package cli
 
 import (
+	"github.com/gorilla/websocket"
 	"io"
 	"net"
 	"os"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 // WebSocketBiDirection

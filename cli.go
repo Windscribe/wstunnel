@@ -2,6 +2,7 @@ package main
 
 import (
 	//"C"
+	"github.com/Windscribe/wstunnel/cli"
 	"github.com/spf13/cobra"
 	"os"
 	//_ "runtime/cgo"
@@ -47,30 +48,21 @@ func main() {
 	}
 }
 
-//export Channel is used by host app to send events to http client.
-var channel = make(chan string)
-
 //export Callback is used by http client to send events to host app
 var primaryListenerSocketFd int = -1
 
-//export WSTunnel wraps OpenVPN tcp traffic in to Websocket
-const WSTunnel = 1
-
-//export Stunnel wraps OpenVPN tcp traffic in to regular tcp.
-const Stunnel = 2
-
 //export Initialise
 func Initialise(development bool, logFilePath string) {
-	InitLogger(development, logFilePath)
+	cli.InitLogger(development, logFilePath)
 }
 
 //export StartProxy
 func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int, extraPadding bool) bool {
-	Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
-	err := NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
+	cli.Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
+	err := cli.NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
 		primaryListenerSocketFd = fd
-		Logger.Info("Socket ready to protect.")
-	}, channel, extraPadding).Run()
+		cli.Logger.Info("Socket ready to protect.")
+	}, cli.Channel, extraPadding).Run()
 	if err != nil {
 		return false
 	}
@@ -79,8 +71,8 @@ func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu 
 
 //export Stop
 func Stop() {
-	Logger.Info("Disconnect signal from host app.")
-	channel <- "done"
+	cli.Logger.Info("Disconnect signal from host app.")
+	cli.Channel <- "done"
 }
 
 //export GetPrimaryListenerSocketFd

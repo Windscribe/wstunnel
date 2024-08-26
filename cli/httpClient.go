@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"context"
@@ -13,6 +13,15 @@ import (
 	"syscall"
 	"time"
 )
+
+//export WSTunnel wraps OpenVPN tcp traffic in to Websocket
+const WSTunnel = 1
+
+//export Stunnel wraps OpenVPN tcp traffic in to regular tcp.
+const Stunnel = 2
+
+//export Channel is used by host app to send events to http client.
+var Channel = make(chan string)
 
 // httpClient
 // sets up tcp server and remote connections.

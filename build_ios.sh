@@ -19,7 +19,7 @@ build() {
     output_dir="./build/${sdk}/arm64"
     rm -rf "$output_dir"
     mkdir -p "$output_dir"
-    go build -buildmode=c-archive -o "$output_dir/proxy.a" cli.go logger.go httpclient.go stunnelbidirection.go websocketbidirConnection.go common.go
+    go build -buildmode=c-archive -o "$output_dir/proxy.a" cli.go
 }
 
 # Build for Apple TVOS

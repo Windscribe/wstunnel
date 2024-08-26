@@ -1,4 +1,4 @@
-module wstunnel
+module github.com/Windscribe/wstunnel
 
 go 1.18
 
