@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ func TestEndToEndConnection(t *testing.T) {
 	go func() {
 		err := NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
-		}, channel, false).Run()
+		}, Channel, false).Run()
 		if err != nil {
 			t.Fail()
 			return
@@ -43,7 +43,7 @@ func TestEndToEndConnection(t *testing.T) {
 	}
 	//Exit
 	time.Sleep(time.Millisecond * 100)
-	channel <- "done"
+	Channel <- "done"
 	//Client 3
 	_, client3Err := mockClientConnection()
 	if client3Err == nil {
