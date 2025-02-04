@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -10,27 +9,40 @@ import (
 
 var Logger *zap.SugaredLogger
 
-// InitLogger Log output is saved to the app provided log file.
+// InitLogger initializes the logger.
 func InitLogger(development bool, logFilePath string) {
 	cfg := zap.NewProductionConfig()
+	outputPaths := []string{"stdout"}
 	if logFilePath != "" {
-		cfg.OutputPaths = []string{logFilePath, "stdout"}
+		outputPaths = append(outputPaths, logFilePath)
 	}
-	cfg.Encoding = "console"
+	cfg.OutputPaths = outputPaths
+
+	cfg.Encoding = "json"
 	cfg.EncoderConfig.EncodeDuration = zapcore.NanosDurationEncoder
 	cfg.EncoderConfig.EncodeLevel = levelEncoder
 	cfg.EncoderConfig.EncodeTime = syslogTimeEncoder
+	cfg.EncoderConfig.MessageKey = "msg"
 	cfg.EncoderConfig.CallerKey = ""
-	cfg.Development = development
+	cfg.EncoderConfig.NameKey = "mod"
+	cfg.EncoderConfig.TimeKey = "tm" // Important: Set the TimeKey
+
 	if !development {
 		cfg.EncoderConfig.StacktraceKey = ""
 	}
-	zapLogger, err := cfg.Build()
+
+	zapLogger, err := cfg.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		log.Fatal(err)
 	}
-	Logger = zapLogger.Sugar()
-	defer Logger.Sync()
+
+	Logger = zapLogger.With(zap.String("mod", "wstunnel")).Sugar()
+
+	if logFilePath != "" {
+		Logger.Info("Logging to stdout and file: ", zap.String("file", logFilePath))
+	} else {
+		Logger.Info("Logging to stdout")
+	}
 }
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
@@ -38,5 +50,5 @@ func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 }
 
 func levelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(fmt.Sprintf("[%s]-", level))
+	enc.AppendString(level.String())
 }
