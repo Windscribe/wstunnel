@@ -82,7 +82,6 @@ func (h *httpClient) Run() error {
 	for !isDone() {
 		tcpConn, err := tcpConnection.Accept()
 		if err != nil {
-			Logger.Error("Error: could not accept the connection: ", err)
 			continue
 		}
 		Logger.Infof("New connection from %s", tcpConn.RemoteAddr().String())
