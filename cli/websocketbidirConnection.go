@@ -2,7 +2,6 @@ package cli
 
 import (
 	"github.com/gorilla/websocket"
-	"io"
 	"net"
 	"os"
 	"time"
@@ -36,14 +35,10 @@ func (b *WebSocketBiDirection) sendTCPToWS() {
 		}
 		readSize, err := b.tcpConn.Read(data)
 		if err != nil && !os.IsTimeout(err) {
-			if err != io.EOF {
-				Logger.Errorf("TCPToWS - Error while reading from TCP: %s", err)
-			}
 			return
 		}
 
 		if err := b.wsConn.WriteMessage(websocket.BinaryMessage, data[:readSize]); err != nil {
-			Logger.Errorf("TCPToWS - Error while writing to WS: %s", err)
 			return
 		}
 	}
@@ -56,7 +51,6 @@ func (b *WebSocketBiDirection) sendWSToTCP() {
 	for {
 		messageType, wsReader, err := b.wsConn.NextReader()
 		if err != nil {
-			Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
 			return
 		}
 		if messageType != websocket.BinaryMessage {
@@ -67,14 +61,10 @@ func (b *WebSocketBiDirection) sendWSToTCP() {
 		for {
 			readSize, err := wsReader.Read(data)
 			if err != nil {
-				if err != io.EOF {
-					Logger.Errorf("WSToTCP - Error while reading from WS: %s", err)
-				}
 				break
 			}
 
 			if _, err := b.tcpConn.Write(data[:readSize]); err != nil {
-				Logger.Errorf("WSToTCP - Error while writing to TCP: %s", err)
 				return
 			}
 		}
