@@ -16,7 +16,7 @@ else
     PLATFORM="unknown"
 fi
 # shellcheck disable=SC2016
-buildCommand='go build -ldflags "-s -w -linkmode=external -extldflags=-Wl,-z,max-page-size=16384" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go'
+buildCommand='go build -ldflags "-s -w" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go'
 echo "$buildCommand"
 
 # For ARM64
