@@ -27,24 +27,26 @@ var Channel = make(chan string)
 // sets up tcp server and remote connections.
 // //////////////////////////////////////////////////////////////////////////////
 type httpClient struct {
-	listenTCP    string
-	remoteServer string
-	tunnelType   int
-	mtu          int
-	callback     func(fd int)
-	channel      chan string
-	extraPadding bool
+	listenTCP     string
+	remoteServer  string
+	tunnelType    int
+	mtu           int
+	callback      func(fd int)
+	channel       chan string
+	extraPadding  bool
+	tlsServerName string
 }
 
-func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, callback func(fd int), channel chan string, extraPadding bool) Runner {
+func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, callback func(fd int), channel chan string, extraPadding bool, tlsServerName string) Runner {
 	return &httpClient{
-		listenTCP:    listenTCP,
-		remoteServer: remoteServer,
-		tunnelType:   tunnelType,
-		mtu:          mtu,
-		callback:     callback,
-		channel:      channel,
-		extraPadding: extraPadding,
+		listenTCP:     listenTCP,
+		remoteServer:  remoteServer,
+		tunnelType:    tunnelType,
+		mtu:           mtu,
+		callback:      callback,
+		channel:       channel,
+		extraPadding:  extraPadding,
+		tlsServerName: tlsServerName,
 	}
 }
 
@@ -116,18 +118,22 @@ func handleStunnelConnection(h *httpClient, localConn net.Conn) {
 
 func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
 	customNetDialer := h.createDialer()
-	cfg := &tls.Config{
-		InsecureSkipVerify: true,
-	}
 	remoteUrl, err := url.Parse(h.remoteServer)
 	if err != nil {
 		return nil, err
+	}
+	serverName := remoteUrl.Hostname()
+	if h.tlsServerName != "" {
+		serverName = h.tlsServerName
+	}
+	cfg := &tls.Config{
+		InsecureSkipVerify: true,
+		ServerName:         serverName,
 	}
 	netConn, err := customNetDialer.Dial("tcp", remoteUrl.Host)
 	if err != nil {
 		return nil, err
 	}
-	cfg.ServerName = remoteUrl.Hostname()
 
 	remoteConn := tls.UClient(netConn, cfg, tls.HelloCustom)
 	clientHelloSpec, err := tls.UTLSIdToSpec(tls.HelloRandomizedALPN)
