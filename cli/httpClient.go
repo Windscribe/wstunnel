@@ -211,9 +211,17 @@ func (h *httpClient) createWsConnection(remoteAddr string) (wsConn *websocket.Co
 		Logger.Infof("%s - Connecting to %s", remoteAddr, wsURL)
 		var httpResponse *http.Response
 		dialer := *websocket.DefaultDialer
-		dialer.TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true,
+		tlsServerName := h.tlsServerName
+		if tlsServerName == "" {
+			if u, e := url.Parse(wsConnectUrl); e == nil {
+				tlsServerName = u.Hostname()
+			}
 		}
+		tlsCfg := &tls.Config{
+			InsecureSkipVerify: true,
+			ServerName:         tlsServerName,
+		}
+		dialer.TLSClientConfig = tlsCfg
 		customNetDialer := h.createDialer()
 		dialer.NetDial = func(network, addr string) (net.Conn, error) {
 			return customNetDialer.Dial(network, addr)

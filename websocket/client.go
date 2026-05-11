@@ -161,8 +161,10 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	if d == nil {
 		d = &nilDialer
 	}
-	d.TLSClientConfig = &tls.Config{
-		InsecureSkipVerify: true,
+	if d.TLSClientConfig == nil {
+		d.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
 	}
 
 	challengeKey, err := generateChallengeKey()
