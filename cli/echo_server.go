@@ -45,9 +45,10 @@ func startServer(address string, path string) *EchoServer {
 	server := EchoServer{
 		clients: map[string]*websocket.Conn{},
 	}
-	http.HandleFunc(path, server.handleRequest)
+	mux := http.NewServeMux()
+	mux.HandleFunc(path, server.handleRequest)
 	go func() {
-		err := http.ListenAndServe(address, nil)
+		err := http.ListenAndServe(address, mux)
 		if err != nil {
 			log.Fatal(err)
 		}
