@@ -22,7 +22,7 @@ func TestEndToEndConnection(t *testing.T) {
 	go func() {
 		err := NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
-		}, Channel, false).Run()
+		}, Channel, false, "").Run()
 		if err != nil {
 			t.Fail()
 			return

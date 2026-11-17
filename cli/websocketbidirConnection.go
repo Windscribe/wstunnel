@@ -72,7 +72,7 @@ func (b *WebSocketBiDirection) sendWSToTCP() {
 }
 
 func (b *WebSocketBiDirection) Run() error {
-	go b.sendTCPToWS()
+	goSafely("wstunnel upload", b.sendTCPToWS)
 	b.sendWSToTCP()
 	return nil
 }
