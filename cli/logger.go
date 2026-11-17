@@ -12,26 +12,30 @@ var Logger = zap.NewNop().Sugar()
 // InitLogger initializes the logger. It never exits the process: the proxy runs inside the host app or its VPN
 // extension, so a log file that can't be opened (for example on iOS before the first unlock) falls back to stdout.
 func InitLogger(development bool, logFilePath string) {
-	zapLogger, err := buildLogger(development, logFilePath)
-	if err != nil && logFilePath != "" {
-		fileErr := err
-		zapLogger, err = buildLogger(development, "")
-		if err == nil {
-			zapLogger.Sugar().Errorf("Can't log to %s, logging to stdout only: %s", logFilePath, fileErr)
-		}
-	}
-	if err != nil {
-		Logger = zap.NewNop().Sugar()
-		return
-	}
-
-	Logger = zapLogger.With(zap.String("mod", "wstunnel")).Sugar()
-
+	Logger = newLogger(development, logFilePath)
 	if logFilePath != "" {
 		Logger.Info("Logging to stdout and file: ", zap.String("file", logFilePath))
 	} else {
 		Logger.Info("Logging to stdout")
 	}
+}
+
+// newLogger builds the proxy's logger. It always returns one: stdout only when the file can't be opened, and a
+// no-op logger when even that fails.
+func newLogger(development bool, logFilePath string) *zap.SugaredLogger {
+	zapLogger, err := buildLogger(development, logFilePath)
+	if err == nil {
+		return zapLogger.With(zap.String("mod", "wstunnel")).Sugar()
+	}
+	fileErr := err
+	if logFilePath != "" {
+		if zapLogger, err = buildLogger(development, ""); err == nil {
+			logger := zapLogger.With(zap.String("mod", "wstunnel")).Sugar()
+			logger.Errorf("Can't log to %s, logging to stdout only: %s", logFilePath, fileErr)
+			return logger
+		}
+	}
+	return zap.NewNop().Sugar()
 }
 
 func buildLogger(development bool, logFilePath string) (*zap.Logger, error) {

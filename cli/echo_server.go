@@ -4,11 +4,13 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sync"
 )
 
 // EchoServer simple web socket server for testing.
 type EchoServer struct {
 	clients map[string]*websocket.Conn
+	lock    sync.Mutex
 }
 
 var upgrader = websocket.Upgrader{
@@ -23,7 +25,9 @@ func (server *EchoServer) handleRequest(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	clientId := connection.RemoteAddr().String()
+	server.lock.Lock()
 	server.clients[clientId] = connection
+	server.lock.Unlock()
 	for {
 		messageType, message, err := connection.ReadMessage()
 		if err != nil || messageType == websocket.CloseMessage {
@@ -32,7 +36,9 @@ func (server *EchoServer) handleRequest(w http.ResponseWriter, r *http.Request) 
 		go server.echoMessageBack(clientId, message)
 	}
 	connection.Close()
+	server.lock.Lock()
 	delete(server.clients, clientId)
+	server.lock.Unlock()
 }
 
 func startServer(address string, path string) *EchoServer {
@@ -50,8 +56,11 @@ func startServer(address string, path string) *EchoServer {
 }
 
 func (server *EchoServer) echoMessageBack(clientId string, message []byte) {
-	err := server.clients[clientId].WriteMessage(websocket.BinaryMessage, message)
-	if err != nil {
+	server.lock.Lock()
+	defer server.lock.Unlock()
+	connection, ok := server.clients[clientId]
+	if !ok {
 		return
 	}
+	_ = connection.WriteMessage(websocket.BinaryMessage, message)
 }
