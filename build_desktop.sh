@@ -1,21 +1,19 @@
 #!/usr/bin/env bash
-rm -r build
-platforms=("windows/arm64" "windows/amd64" "darwin/amd64" "linux/amd64" "linux/arm64")
+set -e
 
-for platform in "${platforms[@]}"
-do
-	platform_split=(${platform//\// })
-	GOOS=${platform_split[0]}
-	GOARCH=${platform_split[1]}
-	output_name='wstunnel-'$GOOS'-'$GOARCH
-	if [ "$GOOS" = "windows" ]; then
-		output_name+='.exe'
-	fi
-	echo "Building $output_name"
-	mkdir -p build/desktop
-	env GOOS="$GOOS" GOARCH="$GOARCH" go build -o build/desktop/$output_name -a -gcflags=all="-l -B" -ldflags="-w -s"
-	if [ $? -ne 0 ]; then
-   		echo 'An error has occurred!'
-		exit 1
-	fi
+rm -rf build
+platforms=("windows/arm64" "windows/amd64" "darwin/amd64" "darwin/arm64" "linux/amd64" "linux/arm64")
+
+build_platform() {
+    local goos=$1 goarch=$2
+    local output_name="build/desktop/wstunnel-$goos-$goarch"
+    [ "$goos" = "windows" ] && output_name+=".exe"
+
+    mkdir -p build/desktop
+    GOOS="$goos" GOARCH="$goarch" go build -o "$output_name" -a -gcflags=all="-l -B" -ldflags="-w -s"
+    echo "Built $goos/$goarch at $output_name"
+}
+
+for platform in "${platforms[@]}"; do
+    build_platform "${platform%%/*}" "${platform##*/}"
 done
