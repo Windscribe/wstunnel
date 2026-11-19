@@ -11,6 +11,14 @@ mkdir -p build/android/x86_64
 export CGO_ENABLED=1
 export CGO_CFLAGS="-fstack-protector-strong"
 
+# The exported C functions (and the header) need `import "C"` and runtime/cgo, commented out in
+# cli.go for the desktop build. Turn them on for this build and put cli.go back afterwards.
+cp cli.go cli.go.orig
+trap 'mv cli.go.orig cli.go' EXIT
+sed -i.bak -e 's|^	//"C"$|	"C"|' -e 's|^	//_ "runtime/cgo"$|	_ "runtime/cgo"|' cli.go
+rm -f cli.go.bak
+grep -q '^	"C"$' cli.go
+
 if [[ "$(uname)" == "Darwin" ]]; then
     PLATFORM="darwin"
 elif [[ "$(uname)" == "Linux" ]]; then
