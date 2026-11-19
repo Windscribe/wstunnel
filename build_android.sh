@@ -1,6 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
 export PATH=$PATH:~/go/bin
 go mod tidy
-rm -r build/android
+rm -rf build/android
 mkdir -p build/android/arm64-v8a
 mkdir -p build/android/armeabi-v7a
 mkdir -p build/android/x86
@@ -15,6 +18,19 @@ elif [[ "$(uname)" == "Linux" ]]; then
 else
     PLATFORM="unknown"
 fi
+
+# `extras ndk` (the CI image's sdkmanager wrapper) installs the NDK but never sets ANDROID_NDK;
+# it always lands under <sdk root>/ndk/<version>, so find it there if it isn't already set.
+if [ -z "$ANDROID_NDK" ]; then
+    SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+    ANDROID_NDK=$(find "$SDK_ROOT/ndk" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1)
+fi
+
+if [ -z "$ANDROID_NDK" ] || [ ! -d "$ANDROID_NDK" ]; then
+    echo "ANDROID_NDK not found. Set ANDROID_NDK or install the NDK via the Android SDK manager."
+    exit 1
+fi
+echo "Using ANDROID_NDK=$ANDROID_NDK"
 # shellcheck disable=SC2016
 buildCommand='go build -ldflags "-s -w" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go'
 echo "$buildCommand"
