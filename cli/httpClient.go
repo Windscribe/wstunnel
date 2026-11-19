@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"runtime/debug"
 	"sync"
 	"syscall"
 	"time"
@@ -20,8 +21,10 @@ const WSTunnel = 1
 //export Stunnel wraps OpenVPN tcp traffic in to regular tcp.
 const Stunnel = 2
 
+// Channel holds one event, so Stop never blocks, also when the proxy isn't running.
+//
 //export Channel is used by host app to send events to http client.
-var Channel = make(chan string)
+var Channel = make(chan string, 1)
 
 // httpClient
 // sets up tcp server and remote connections.
@@ -52,6 +55,16 @@ func NewHTTPClient(listenTCP, remoteServer string, tunnelType int, mtu int, call
 
 // Run stars tcp server and connect to remote server.
 func (h *httpClient) Run() error {
+	if h.tunnelType != WSTunnel && h.tunnelType != Stunnel {
+		err := fmt.Errorf("invalid tunnel type %d", h.tunnelType)
+		Logger.Errorf("Not starting proxy: %s", err)
+		return err
+	}
+	// A stop requested while no proxy was running belongs to an earlier run.
+	select {
+	case <-h.channel:
+	default:
+	}
 	tcpAdr, err := net.ResolveTCPAddr("tcp", h.listenTCP)
 	if err != nil {
 		Logger.Errorf("Error resolving tcp address: %s", err)
@@ -70,7 +83,7 @@ func (h *httpClient) Run() error {
 		defer doneMutex.Unlock()
 		return done
 	}
-	go func() {
+	goSafely("stop listener", func() {
 		select {
 		case msg := <-h.channel:
 			if msg == "done" {
@@ -80,22 +93,31 @@ func (h *httpClient) Run() error {
 				_ = tcpConnection.Close()
 			}
 		}
-	}()
+	})
 	for !isDone() {
 		tcpConn, err := tcpConnection.Accept()
 		if err != nil {
 			continue
 		}
 		Logger.Infof("New connection from %s", tcpConn.RemoteAddr().String())
-		if h.tunnelType == WSTunnel {
-			handleWsTunnelConnection(h, tcpConn)
-		} else if h.tunnelType == Stunnel {
-			handleStunnelConnection(h, tcpConn)
-		} else {
-			Logger.Fatal("Invalid tunnel type specified.")
-		}
+		h.handleConnection(tcpConn)
 	}
 	return err
+}
+
+// handleConnection connects one local client to the remote server. A panic while connecting closes only this client.
+func (h *httpClient) handleConnection(tcpConn net.Conn) {
+	defer func() {
+		if r := recover(); r != nil {
+			_ = tcpConn.Close()
+			Logger.Errorf("Recovered from a panic while connecting %s: %v\n%s", tcpConn.RemoteAddr(), r, debug.Stack())
+		}
+	}()
+	if h.tunnelType == WSTunnel {
+		handleWsTunnelConnection(h, tcpConn)
+	} else {
+		handleStunnelConnection(h, tcpConn)
+	}
 }
 
 func handleStunnelConnection(h *httpClient, localConn net.Conn) {
@@ -113,7 +135,7 @@ func handleStunnelConnection(h *httpClient, localConn net.Conn) {
 	}
 	Logger.Info("Starting stunnel bi-direction connection.")
 	b := NewStunnelBiDirection(localConn, remoteConn, h.mtu)
-	go b.Run()
+	goSafely("stunnel connection", func() { _ = b.Run() })
 }
 
 func (h *httpClient) createRemoteConnection() (*tls.UConn, error) {
@@ -174,7 +196,7 @@ func handleWsTunnelConnection(h *httpClient, tcpConn net.Conn) {
 		return
 	}
 	b := NewBidirConnection(tcpConn, wsConn, time.Second*10, h.mtu)
-	go b.Run()
+	goSafely("wstunnel connection", func() { _ = b.Run() })
 }
 
 func (h *httpClient) toUrl(asString string) (string, error) {

@@ -21,7 +21,7 @@ func NewStunnelBiDirection(localConn net.Conn, remoteConn *tls.UConn, mtu int) R
 }
 
 func (s *StunnelBiDirection) Run() error {
-	go s.sendTCPToStunnel()
+	goSafely("stunnel upload", s.sendTCPToStunnel)
 	s.sendStunnelToTCP()
 	return nil
 }

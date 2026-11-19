@@ -15,14 +15,17 @@ var tcpServerAddress = "localhost:1194"
 var dataToSend = []byte("Send me this message back.")
 
 func TestEndToEndConnection(t *testing.T) {
-	InitLogger(true, "")
+	// Free ports, so the test doesn't depend on what else runs on the machine (8080 is taken on CI runners).
+	echoServerAddress = freeAddress(t)
+	webSocketServerAddress = fmt.Sprintf("%s%s%s", protocol, echoServerAddress, path)
+	tcpServerAddress = freeAddress(t)
 	//Ws server
 	startServer(echoServerAddress, path)
 	//Tcp server
 	go func() {
 		err := NewHTTPClient(tcpServerAddress, webSocketServerAddress, 1, 1600, func(fd int) {
 			t.Log(fd)
-		}, Channel, false).Run()
+		}, Channel, false, "").Run()
 		if err != nil {
 			t.Fail()
 			return
@@ -51,6 +54,15 @@ func TestEndToEndConnection(t *testing.T) {
 		return
 	}
 	t.Log("Test is successful.")
+}
+
+func freeAddress(t *testing.T) string {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	return listener.Addr().String()
 }
 
 func mockClientConnection() (string, error) {
