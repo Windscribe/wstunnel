@@ -35,32 +35,32 @@ echo "Using ANDROID_NDK=$ANDROID_NDK"
 buildCommand='go build -ldflags "-s -w" -buildmode=c-shared -o "$output_dir/libproxy.so" cli.go'
 echo "$buildCommand"
 
-# For ARM64
-output_dir="./build/android/arm64-v8a"
-TOOLCHAIN=("$ANDROID_NDK/toolchains/llvm/prebuilt/$PLATFORM-x86_64/bin/aarch64-linux-android21-clang")
-# shellcheck disable=SC2086
-GOOS=android GOARCH=arm64 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
-rm $output_dir/libproxy.h
+build_arch() {
+    local abi=$1 goarch=$2 clang=$3
+    local output_dir="./build/android/$abi"
+    local cc="$ANDROID_NDK/toolchains/llvm/prebuilt/$PLATFORM-x86_64/bin/$clang"
 
-## For ARMv7
-output_dir="./build/android/armeabi-v7a"
-TOOLCHAIN=("$ANDROID_NDK/toolchains/llvm/prebuilt/$PLATFORM-x86_64/bin/armv7a-linux-androideabi21-clang")
-# shellcheck disable=SC2086
-GOOS=android GOARCH=arm CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
-rm $output_dir/libproxy.h
+    echo "=== Building $abi (GOARCH=$goarch, CC=$cc) ==="
+    if [ ! -x "$cc" ]; then
+        echo "Toolchain not found or not executable: $cc"
+        exit 1
+    fi
 
-## For x86
-output_dir="./build/android/x86"
-TOOLCHAIN=("$ANDROID_NDK/toolchains/llvm/prebuilt/$PLATFORM-x86_64/bin/i686-linux-android21-clang")
-# shellcheck disable=SC2086
-GOOS=android GOARCH=386 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
-rm $output_dir/libproxy.h
+    GOOS=android GOARCH="$goarch" CC="$cc" output_dir="$output_dir" sh -c "$buildCommand"
 
-## For x86_64
-output_dir="./build/android/x86_64"
-TOOLCHAIN=("$ANDROID_NDK/toolchains/llvm/prebuilt/$PLATFORM-x86_64/bin/x86_64-linux-android21-clang")
-# shellcheck disable=SC2086
-GOOS=android GOARCH=amd64 CC="${TOOLCHAIN[0]}" output_dir="$output_dir" sh -c "$buildCommand"
-rm $output_dir/libproxy.h
+    echo "--- contents of $output_dir after build ---"
+    ls -la "$output_dir"
+
+    if [ ! -f "$output_dir/libproxy.h" ]; then
+        echo "libproxy.h was not produced in $output_dir - build did not actually succeed."
+        exit 1
+    fi
+    rm "$output_dir/libproxy.h"
+}
+
+build_arch "arm64-v8a" "arm64" "aarch64-linux-android21-clang"
+build_arch "armeabi-v7a" "arm" "armv7a-linux-androideabi21-clang"
+build_arch "x86" "386" "i686-linux-android21-clang"
+build_arch "x86_64" "amd64" "x86_64-linux-android21-clang"
 
 echo 'Build successful...'
