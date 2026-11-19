@@ -1,7 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
 
-# Common variables
 export GOOS=ios
 export GOARCH=arm64
 export CGO_ENABLED=1
@@ -15,51 +14,32 @@ rm -f cli.go.bak
 grep -q '^	"C"$' cli.go
 
 build() {
-    local sdk=$1
-    local min_version=$2
+    local sdk=$1 min_version=$2
+    local sdk_path
+    sdk_path=$(xcrun --sdk "$sdk" --show-sdk-path)
 
     export SDK=$sdk
-    # The installed SDK, whatever Xcode version the runner has.
-    local sdk_path=$(xcrun --sdk "$sdk" --show-sdk-path)
-    CC="clang -arch arm64 -isysroot ${sdk_path} -m${sdk}-version-min=${min_version} -fembed-bitcode"
-    CGO_CFLAGS=""
-    CGO_LDFLAGS="-framework CoreFoundation"
-    export CC
+    export CC="clang -arch arm64 -isysroot ${sdk_path} -m${sdk}-version-min=${min_version} -fembed-bitcode"
+    export CGO_CFLAGS=""
+    export CGO_LDFLAGS="-framework CoreFoundation"
 
-    output_dir="./build/${sdk}/arm64"
+    local output_dir="./build/${sdk}/arm64"
     rm -rf "$output_dir"
     mkdir -p "$output_dir"
     go build -buildmode=c-archive -o "$output_dir/proxy.a" cli.go
+    echo "Built $sdk at $output_dir/proxy.a"
 }
 
-# Build for Apple TVOS
 build "appletvos" "17.0"
-echo "Apple TVOS framework at ./build/appletvos/arm64/proxy.a"
-
-# Build for Apple TV Simulator
 build "appletvsimulator" "17.0"
-echo "Apple TVOS framework at ./build/appletvsimulator/arm64/proxy.a"
-
-# Build for iPhoneOS
 build "iphoneos" "12.0"
-echo "iPhoneOS framework at ./build/iphoneos/arm64/proxy.a"
-
-# Build for iPhoneSimulator
 build "iphonesimulator" "12.0"
-echo "iPhoneSimulator framework at ./build/iphonesimulator/arm64/proxy.a"
 
-# Create a combined headers directory
 combined_headers_dir="./build/combined_headers"
 rm -rf "$combined_headers_dir"
 mkdir -p "$combined_headers_dir"
-
-# Copy header files from all builds
 cp ./build/appletvos/arm64/*.h "$combined_headers_dir"
-# same for all platforms
-#cp ./build/iphoneos/arm64/*.h "$combined_headers_dir"
-#cp ./build/iphonesimulator/arm64/*.h "$combined_headers_dir"
 
-# Create .xcframework
 rm -rf ./build/Proxy.xcframework
 xcodebuild -create-xcframework \
     -library ./build/appletvos/arm64/proxy.a -headers "$combined_headers_dir" \
