@@ -74,7 +74,12 @@ func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu 
 //export Stop
 func Stop() {
 	cli.Logger.Info("Disconnect signal from host app.")
-	cli.Channel <- "done"
+	// Never block the caller: the host app calls this from its stop path, and nothing receives when the proxy
+	// isn't running (it never started, or Run already returned).
+	select {
+	case cli.Channel <- "done":
+	default:
+	}
 }
 
 //export GetPrimaryListenerSocketFd
