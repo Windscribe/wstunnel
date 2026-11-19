@@ -46,7 +46,7 @@ BuildAndroidLibrary:
 
 BuildiOSFramework:
   stage: build
-  tags: [ macos11qt6 ]
+  tags: [ macos-arm64-qt6 ]
   script:
     - chmod +x build_ios.sh
     - ./build_ios.sh
